@@ -1,0 +1,12 @@
+UPDATE users SET is_active = 0 WHERE id = 8;
+
+UPDATE users
+SET is_active = 0,
+    status = 'active'
+WHERE id = 8;
+
+UPDATE users
+SET is_active = 0,
+    status = 'trial_expired'
+WHERE id = 8;
+

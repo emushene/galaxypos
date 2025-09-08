@@ -121,7 +121,16 @@ Route::controller(ClientAutoUpdateController::class)->group(function () {
 Auth::routes();
 Route::get('/documentation', [HomeController::class, 'documentation']);
 
-Route::group(['middleware' => ['common', 'auth', 'active']], function() {
+// =============================
+// SaaS account state routes
+// =============================
+Route::view('/account/pending', 'account.pending')->name('account.pending');
+Route::view('/account/trial_expired', 'account.trial_expired')->name('account.trial_expired');
+Route::view('/account/suspended', 'account.suspended')->name('account.suspended');
+Route::view('/account/inactive', 'account.inactive')->name('account.inactive');
+
+
+Route::group(['middleware' => ['common', 'auth', 'active', ]], function() {
 
     Route::resource('license', LicenseController::class)->except([ 'show']);
     Route::controller(LicenseController::class)->group(function () {
@@ -129,22 +138,22 @@ Route::group(['middleware' => ['common', 'auth', 'active']], function() {
     });
 
     Route::controller(HomeController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::get('/dashboard', 'dashboard');
-        Route::get('/home', 'home');
-        Route::get('/yearly-best-selling-price', 'yearlyBestSellingPrice');
-        Route::get('/yearly-best-selling-qty', 'yearlyBestSellingQty');
-        Route::get('/monthly-best-selling-qty', 'monthlyBestSellingQty');
-        Route::get('/recent-sale', 'recentSale');
-        Route::get('/recent-purchase', 'recentPurchase');
-        Route::get('/recent-quotation', 'recentQuotation');
-        Route::get('/recent-payment', 'recentPayment');
-        Route::get('switch-theme/{theme}', 'switchTheme')->name('switchTheme');
-        Route::get('/dashboard-filter/{start_date}/{end_date}', 'dashboardFilter');
-        Route::get('addon-list', 'addonList');
-        Route::get('my-transactions/{year}/{month}', 'myTransaction');
-    });
-
+    Route::get('/', 'index')->middleware('prevent.cashier.dashboard');
+    Route::get('/dashboard', 'dashboard')->middleware('prevent.cashier.dashboard');
+    Route::get('/home', 'home')->middleware('prevent.cashier.dashboard');
+    
+    Route::get('/yearly-best-selling-price', 'yearlyBestSellingPrice');
+    Route::get('/yearly-best-selling-qty', 'yearlyBestSellingQty');
+    Route::get('/monthly-best-selling-qty', 'monthlyBestSellingQty');
+    Route::get('/recent-sale', 'recentSale');
+    Route::get('/recent-purchase', 'recentPurchase');
+    Route::get('/recent-quotation', 'recentQuotation');
+    Route::get('/recent-payment', 'recentPayment');
+    Route::get('switch-theme/{theme}', 'switchTheme')->name('switchTheme');
+    Route::get('/dashboard-filter/{start_date}/{end_date}', 'dashboardFilter');
+    Route::get('addon-list', 'addonList');
+    Route::get('my-transactions/{year}/{month}', 'myTransaction');
+});
 
     // Need to check again
     Route::resource('products',ProductController::class)->except([ 'show']);

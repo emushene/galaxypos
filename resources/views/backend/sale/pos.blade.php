@@ -384,6 +384,15 @@
                             <button style="background-color: #319398" type="button" class="btn btn-sm btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="point-btn"><i class="dripicons-rocket"></i> {{trans('file.Points').'(F10)'}}</button>
                         </div>
                         @endif
+                         <!-- MENU Button -->
+                        <div class="column-5">
+                            <button type="button" class="btn btn-sm btn-custom" 
+                                    style="background-color: #080808ff;" 
+                                    data-toggle="modal" data-target="#menuModal">
+                                <i class="fa fa-bars"></i> MENU
+                            </button>
+                        </div>
+                        <!-- END MENU Button -->
                         @if(in_array("pos_void", $all_permission))
                         <div class="column-5">
                             <button style="background-color: #d63031;" type="button" class="btn btn-sm btn-custom" id="cancel-btn" onclick="return confirmCancel()"><i class="fa fa-close"></i> {{trans('file.Cancel').'(F12)'}}</button>
@@ -1553,6 +1562,59 @@
         </div>
     </div>
 </section>
+
+<!-- ================= MENU Modal ================= -->
+<div class="modal fade" id="menuModal" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 400px;">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="menuModalLabel"><i class="fa fa-bars"></i> Quick Menu</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row text-center">
+            <div class="col-6 mb-3">
+              <a class="btn btn-outline-primary w-100" href="{{ route('expenses.index') }}">
+                <i class="fa fa-money"></i><br>Expense
+              </a>
+            </div>
+            <div class="col-6 mb-3">
+              <a class="btn btn-outline-primary w-100" href="{{ route('return-sale.index') }}">
+                <i class="fa fa-undo"></i><br>Return
+              </a>
+            </div>
+            <div class="col-6 mb-3">
+              <a class="btn btn-outline-primary w-100" href="{{ route('sales.index') }}">
+                <i class="fa fa-list"></i><br>Sales List<br>(Reprint Invoice)
+              </a>
+            </div>
+
+            <div class="col-6 mb-3">
+              <a class="btn btn-outline-primary w-100" href="{{ route('cashRegister.close') }}">
+                <i class="fa fa-arrow-up"></i><br>Cash Up
+              </a>
+            </div>
+            <div class="col-6 mb-3">
+  <a class="btn btn-outline-primary w-100" href="{{ route('quotations.index') }}">
+    <i class="fa fa-file-text"></i><br>Quote<br>
+    <small>Save & Print</small><br>
+    <small>Convert to Sale</small>
+  </a>
+</div>
+
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END MENU Modal -->
 
 
 @endsection
