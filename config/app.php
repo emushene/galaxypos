@@ -182,6 +182,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allow selling without stock
+    |--------------------------------------------------------------------------
+    |
+    | If set to "yes", the system will allow selling products even if stock is
+    | zero or negative. If set to "no", it will block when stock <= 0.
+    |
+    */
+
+    'without_stock' => env('WITHOUT_STOCK', 'no'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Class Aliases
     |--------------------------------------------------------------------------
     |

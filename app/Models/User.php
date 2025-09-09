@@ -4,11 +4,17 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
     use Notifiable;
 
+    /*
+    |--------------------------------------------------------------------------
+    | Mass Assignment
+    |--------------------------------------------------------------------------
+    */
     protected $fillable = [
         'name',
         'email',
@@ -20,7 +26,8 @@ class User extends Authenticatable
         'warehouse_id',
         'is_active',
         'is_deleted',
-        'status', // SaaS state (pending, active, suspended, trial_expired, etc.)
+        'status',   // SaaS state (pending, active, suspended, trial_expired, etc.)
+        'plan_id',  // quick reference to currently assigned plan
     ];
 
     protected $hidden = [
@@ -28,29 +35,91 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function isActive()
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+    public function isActive(): bool
     {
-        return $this->is_active;
+        return (bool) $this->is_active;
     }
 
-    public function holiday()
+    public function hasPermission(string $permissionName): bool
     {
-        return $this->hasMany(Holiday::class);
+        return DB::table('permissions')
+            ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+            ->where('role_has_permissions.role_id', $this->role_id)
+            ->where('permissions.name', $permissionName)
+            ->exists();
     }
 
-    // 🔹 Simple role helper
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+    // Role
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
 
-    // 🔹 Permission check helper
-    public function hasPermission($permissionName)
+    // Holidays
+    public function holiday()
     {
-        return \DB::table('permissions')
-            ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
-            ->where('role_has_permissions.role_id', $this->role_id)
-            ->where('permissions.name', $permissionName)
+        return $this->hasMany(Holiday::class);
+    }
+
+    // Current assigned plan (quick access)
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
+    // Full subscription history
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    // Most recent subscription (could be active, trial, expired, etc.)
+    public function currentSubscription()
+    {
+        return $this->hasOne(Subscription::class)->latestOfMany();
+    }
+
+    // Currently active subscription
+    public function activeSubscription()
+    {
+        return $this->hasOne(Subscription::class)
+            ->where('status', 'active')
+            ->latestOfMany();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SaaS / Subscription Helpers
+    |--------------------------------------------------------------------------
+    */
+    // Check if user is on trial
+    public function onTrial(): bool
+    {
+        return $this->subscriptions()
+            ->where('status', 'trial')
+            ->where('trial_ends_at', '>=', now())
+            ->exists();
+    }
+
+    // Check if user has any active subscription
+    public function subscribed(): bool
+    {
+        return $this->subscriptions()
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('ends_at')
+                      ->orWhere('ends_at', '>=', now());
+            })
             ->exists();
     }
 }

@@ -63,6 +63,12 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LicenseController;
+use App\Http\Controllers\SupportController;
+use App\Http\Controllers\TrialController;
+use App\Http\Controllers\PricingController;
+use App\Http\Controllers\SubscriptionController;
+
+
 
 Route::get('migrate', function() {
 	Artisan::call('migrate');
@@ -613,3 +619,14 @@ Route::group(['middleware' => ['common', 'auth', 'active', ]], function() {
 	Route::post('woocommerce-install', [AddonInstallController::class,'woocommerceInstall'])->name('woocommerce.install');
 });
 
+//Support Route
+
+Route::get('/support', [SupportController::class, 'showForm'])->name('support.form');
+Route::post('/support/send', [SupportController::class, 'send'])->name('support.send');
+
+// Trial Route
+//Route::post('/trial/start', [TrialController::class, 'startTrial'])->name('trial.start');
+Route::match(['get', 'post'], '/trial/start', [TrialController::class, 'startTrial'])->name('trial.start');
+// web.php
+Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
+Route::post('/subscribe/{plan}', [SubscriptionController::class, 'subscribe'])->name('subscribe');
