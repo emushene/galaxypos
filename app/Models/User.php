@@ -80,14 +80,12 @@ class User extends Authenticatable
     // Full subscription history
     public function subscriptions()
     {
-        return $this->hasMany(Subscription::class);
+
+        return $this->hasMany(Subscription::class, 'user_id');
     }
 
     // Most recent subscription (could be active, trial, expired, etc.)
-    public function currentSubscription()
-    {
-        return $this->hasOne(Subscription::class)->latestOfMany();
-    }
+    // Removed duplicate currentSubscription method to avoid redeclaration error.
 
     // Currently active subscription
     public function activeSubscription()
@@ -118,8 +116,31 @@ class User extends Authenticatable
             ->where('status', 'active')
             ->where(function ($query) {
                 $query->whereNull('ends_at')
-                      ->orWhere('ends_at', '>=', now());
+                    ->orWhere('ends_at', '>=', now());
             })
             ->exists();
+    }
+
+    /**
+     * Get the user's most recent subscription (regardless of status).
+     */
+    public function latestSubscription()
+    {
+        return $this->hasOne(Subscription::class)->latestOfMany();
+    }
+
+
+
+    /**
+     * Get the user's current active subscription.
+     */
+    public function currentSubscription()
+    {
+        return $this->subscriptions()
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('ends_at')
+                    ->orWhere('ends_at', '>', now());
+            });
     }
 }

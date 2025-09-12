@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Customer;
@@ -45,7 +46,6 @@ use App\Models\GeneralSetting;
 use App\Models\MailSetting;
 use Stripe\Stripe;
 use NumberToWords\NumberToWords;
-use Auth;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Mail\SaleDetails;
@@ -63,8 +63,11 @@ use Salla\ZATCA\Tags\InvoiceTotalAmount;
 use Salla\ZATCA\Tags\Seller;
 use Salla\ZATCA\Tags\TaxNumber;
 
+
+
 class SaleController extends Controller
 {
+    
     use \App\Traits\TenantInfo;
     use \App\Traits\MailInfo;
 
@@ -406,7 +409,7 @@ class SaleController extends Controller
         try {*/
 
             /* New Code Going Start Here */
-            if($data['multi_payment_chk'] == 1){ /* New Code Going Start Here */
+            if(isset($data['multi_payment_chk']) && $data['multi_payment_chk'] == 1){ /* New Code Going Start Here */
 
                 if(isset($request->reference_no)) {
                     $this->validate($request, [
@@ -1753,6 +1756,21 @@ class SaleController extends Controller
         else
             return redirect('sales')->with('message', $message);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function sendMail(Request $request)
     {

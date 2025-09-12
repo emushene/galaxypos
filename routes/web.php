@@ -630,3 +630,8 @@ Route::match(['get', 'post'], '/trial/start', [TrialController::class, 'startTri
 // web.php
 Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 Route::post('/subscribe/{plan}', [SubscriptionController::class, 'subscribe'])->name('subscribe');
+// Show all subscriptions
+Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+
+    // Cancel a subscription
+Route::post('/subscriptions/{id}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');

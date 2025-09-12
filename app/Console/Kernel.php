@@ -31,6 +31,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('reset:db')->everyMinute();
         // Testing Purpose
         $schedule->command('quote:daily')->everyMinute();
+        // Run once daily at midnight Check Sunscriptions and Trials
+        $schedule->command('subscriptions:check')->daily();
     }
 
     /**

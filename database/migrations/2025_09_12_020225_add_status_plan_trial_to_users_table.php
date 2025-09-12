@@ -17,13 +17,23 @@ return new class extends Migration
                 $table->string('status')->default('pending')->after('is_deleted');
             }
 
-            // Add plan_id column
+            // Add plan_id column if not already present
             if (!Schema::hasColumn('users', 'plan_id')) {
                 $table->foreignId('plan_id')
                       ->nullable()
                       ->after('status')
                       ->constrained('plans')
                       ->nullOnDelete();
+            }
+
+            // Add trial_ends_at column if not already present
+            if (!Schema::hasColumn('users', 'trial_ends_at')) {
+                $table->timestamp('trial_ends_at')
+                      ->nullable()
+                      ->after('plan_id');
+
+                // Add index for faster lookups
+                $table->index('trial_ends_at');
             }
         });
     }
@@ -34,6 +44,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            if (Schema::hasColumn('users', 'trial_ends_at')) {
+                $table->dropIndex(['trial_ends_at']);
+                $table->dropColumn('trial_ends_at');
+            }
+
             if (Schema::hasColumn('users', 'plan_id')) {
                 $table->dropForeign(['plan_id']);
                 $table->dropColumn('plan_id');
