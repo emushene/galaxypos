@@ -1,26 +1,40 @@
-@extends('backend.layout.main') @section('content')
+@extends('backend.layout.main')
+@section('content')
+
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
+<div class="alert alert-danger alert-dismissible text-center">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    {{ session()->get('not_permitted') }}
+</div>
 @endif
+
 <style>
-    /*.barcodelist {
+    .barcodelist {
         max-width: 378px;
         text-align: center;
     }
+
     .barcodelist img {
         max-width: 150px;
-    }*/
+    }
 
     @media print {
         * {
-            font-size:12px;
+            font-size: 12px;
             line-height: 20px;
         }
-        td,th {padding: 5px 0;}
+        td, th {
+            padding: 5px 0;
+        }
         .hidden-print {
             display: none !important;
         }
-        @page { size: landscape; margin: 0 !important; }
+        @page {
+            size: landscape;
+            margin: 0 !important;
+        }
         .barcodelist {
             max-width: 378px;
         }
@@ -28,8 +42,17 @@
             max-width: 150px;
         }
     }
-
+    #preview-section {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-top: 2rem;
+        min-height: 200px;
+        background-color: #f8f9fa;
+        max-height: 500px;
+        overflow-y: auto;
+    }
 </style>
+
 <section class="forms">
     <div class="container-fluid">
         <div class="row">
@@ -40,16 +63,28 @@
                     </div>
                     <div class="card-body">
                         <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
+
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="duplicate-alert" style="display: none;">
+                            <strong>Oops!</strong> This product has already been added.
+                            <button type="button" class="close" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>{{trans('file.add_product')}} *</label>
                                         <div class="search-box input-group">
-
                                             <button type="button" class="btn btn-secondary btn-lg"><i class="fa fa-barcode"></i></button>
                                             <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="Please type product code and select..." class="form-control" />
                                         </div>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <button type="button" class="btn btn-warning" id="clear-all-btn">
+                                            <i class="dripicons-trash"></i> {{trans('Clear All')}}
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -65,14 +100,14 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                @if($preLoadedproduct)
+                                                    @if($preLoadedproduct)
                                                     <tr data-imagedata="{{$preLoadedproduct[3]}}" data-price="{{$preLoadedproduct[2]}}" data-promo-price="{{$preLoadedproduct[4]}}" data-currency="{{$preLoadedproduct[5]}}" data-currency-position="{{$preLoadedproduct[6]}}">
                                                         <td>{{$preLoadedproduct[0]}}</td>
                                                         <td class="product-code">{{$preLoadedproduct[1]}}</td>
                                                         <td><input type="number" class="form-control qty" name="qty[]" value="1" /></td>
                                                         <td><button type="button" class="ibtnDel btn btn-md btn-danger">Delete</button></td>
                                                     </tr>
-                                                @endif
+                                                    @endif
                                                 </tbody>
                                             </table>
                                         </div>
@@ -96,7 +131,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group mt-3">
-                                    <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary" id="submit-button">
+                                    <button type="button" class="btn btn-primary" id="print-button-main">
+                                        <i class="dripicons-print"></i> {{trans('Print Barcodes')}}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -104,22 +141,21 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="print-barcode" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
-        <div role="document" class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                  <h5 id="modal_header" class="modal-title">{{trans('file.Barcode')}}</h5>&nbsp;&nbsp;
-                  <button id="print-btn" type="button" class="btn btn-default btn-sm"><i class="dripicons-print"></i> {{trans('file.Print')}}</button>
-                  <button type="button" id="close-btn" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
-                </div>
-                <div class="modal-body">
-                    <div id="label-content">
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <h4>Live Barcode Preview</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="preview-section">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </section>
 
@@ -127,183 +163,169 @@
 
 @push('scripts')
 <script type="text/javascript">
-
-    $("ul#product").siblings('a').attr('aria-expanded','true');
+    $("ul#product").siblings('a').attr('aria-expanded', 'true');
     $("ul#product").addClass("show");
     $("ul#product #printBarcode-menu").addClass("active");
-    <?php $productArray = []; ?>
+
     var lims_product_code = [
-    @foreach($lims_product_list_without_variant as $product)
-        <?php
-            $productArray[] = htmlspecialchars($product->code . ' (' . $product->name . ')');
-        ?>
-    @endforeach
-    @foreach($lims_product_list_with_variant as $product)
-        <?php
-            $productArray[] = htmlspecialchars($product->item_code . ' (' . $product->name . ')');
-        ?>
-    @endforeach
-    <?php
-        echo  '"'.implode('","', $productArray).'"';
-    ?>
+        @foreach($lims_product_list_without_variant as $product)
+        "{{ htmlspecialchars($product->code . ' (' . $product->name . ')') }}",
+        @endforeach
+        @foreach($lims_product_list_with_variant as $product)
+        "{{ htmlspecialchars($product->item_code . ' (' . $product->name . ')') }}",
+        @endforeach
     ];
 
-    var lims_productcodeSearch = $('#lims_productcodeSearch');
+    function generateBarcodeHtml(products, paperSize, printOptions) {
+        let htmlText = '<table class="barcodelist" style="width:378px;" cellpadding="5px" cellspacing="10px">';
+        
+        if (products.length === 0) {
+            return '<p class="text-center text-muted">No products selected for preview.</p>';
+        }
 
-    lims_productcodeSearch.autocomplete({
-    source: function(request, response) {
-        var matcher = new RegExp(".?" + $.ui.autocomplete.escapeRegex(request.term), "i");
-        response($.grep(lims_product_code, function(item) {
-            return matcher.test(item);
-        }));
-    },
-    select: function(event, ui) {
-        var data = ui.item.value;
-        $.ajax({
-            type: 'GET',
-            url: 'lims_product_search',
-            data: {
-                data: data
-            },
-            success: function(data) {
-                var flag = 1;
-                $(".product-code").each(function() {
-                    if ($(this).text() == data[1]) {
-                        alert('Duplicate input is not allowed!')
-                        flag = 0;
-                    }
-                });
-                $("input[name='product_code_name']").val('');
-                if(flag){
-                    var newRow = $('<tr data-imagedata="'+data[3]+'" data-price="'+data[2]+'" data-promo-price="'+data[4]+'" data-currency="'+data[5]+'" data-currency-position="'+data[6]+'">');
-                    var cols = '';
-                    cols += '<td>' + data[0] + '</td>';
-                    cols += '<td class="product-code">' + data[1] + '</td>';
-                    cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" /></td>';
-                    cols += '<td><button type="button" class="ibtnDel btn btn-md btn-danger">Delete</button></td>';
+        products.forEach(product => {
+            const qty = parseInt(product.qty) || 1;
+            for (let i = 0; i < qty; i++) {
+                if (i % 2 === 0) {
+                    htmlText += '<tr>';
+                }
+                
+                let tdStyle = '';
+                if (paperSize == 36) {
+                    tdStyle = 'width:164px;height:88%;padding-top:7px;vertical-align:middle;text-align:center';
+                } else if (paperSize == 24) {
+                    tdStyle = 'width:164px;height:100%;font-size:12px;text-align:center';
+                } else if (paperSize == 18) {
+                    tdStyle = 'width:164px;height:100%;font-size:10px;text-align:center';
+                }
+                htmlText += `<td style="${tdStyle}">`;
 
-                    newRow.append(cols);
-                    $("table.order-list tbody").append(newRow);
+                if (printOptions.name) {
+                    htmlText += product.name + '<br>';
+                }
+
+                htmlText += `<img style="max-width:150px;" src="data:image/png;base64,${product.barcodeImage}" alt="barcode" /><br>`;
+                
+                htmlText += product.code + '<br>';
+                
+                if (printOptions.promoPrice && product.promoPrice) {
+                    htmlText += `Price: R<span style="text-decoration: line-through;"> ${product.price}</span> ${product.promoPrice}<br>`;
+                } else if (printOptions.price) {
+                    htmlText += `Price: R ${product.price}`;
+                }
+                htmlText += '</td>';
+
+                if (i % 2 !== 0) {
+                    htmlText += '</tr>';
                 }
             }
         });
-    }
-});
 
-    //Delete product
-    $("table.order-list tbody").on("click", ".ibtnDel", function(event) {
-        rowindex = $(this).closest('tr').index();
-        $(this).closest("tr").remove();
+        htmlText += '</table>';
+        return htmlText;
+    }
+
+    function updatePreview() {
+        var products = [];
+        $('table.order-list tbody tr').each(function() {
+            var row = $(this);
+            products.push({
+                name: row.find('td:nth-child(1)').text(),
+                code: row.find('td:nth-child(2)').text(),
+                qty: row.find('.qty').val(),
+                price: row.data('price'),
+                promoPrice: row.data('promo-price'),
+                barcodeImage: row.data('imagedata'),
+                currency: row.data('currency'),
+                currencyPosition: row.data('currency-position')
+            });
+        });
+
+        var paper_size = $("#paper-size").val();
+        var printOptions = {
+            name: $('input[name="name"]').is(":checked"),
+            price: $('input[name="price"]').is(":checked"),
+            promoPrice: $('input[name="promo_price"]').is(":checked")
+        };
+
+        var htmlContent = generateBarcodeHtml(products, paper_size, printOptions);
+        $('#preview-section').html(htmlContent);
+    }
+
+    $(document).ready(function() {
+        updatePreview();
     });
 
-    $("#submit-button").on("click", function(event) {
-        paper_size = ($("#paper-size").val());
-        if(paper_size != "0") {
-            var product_name = [];
-            var code = [];
-            var price = [];
-            var promo_price = [];
-            var qty = [];
-            var barcode_image = [];
-            var currency = [];
-            var currency_position = [];
-            var rownumber = $('table.order-list tbody tr:last').index();
-            for(i = 0; i <= rownumber; i++){
-                product_name.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('td:nth-child(1)').text());
-                code.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('td:nth-child(2)').text());
-                price.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('price'));
-                promo_price.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('promo-price'));
-                currency.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('currency'));
-                currency_position.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('currency-position'));
-                qty.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.qty').val());
-                barcode_image.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('imagedata'));
-            }
-            var htmltext = '<table class="barcodelist" style="width:378px;" cellpadding="5px" cellspacing="10px">';
-            /*$.each(qty, function(index){
-                i = 0;
-                while(i < qty[index]){
-                    if(i % 2 == 0)
-                        htmltext +='<tr>';
-                    htmltext +='<td style="width:164px;height:88%;padding-top:7px;vertical-align:middle;text-align:center">';
-                    htmltext += product_name[index] + '<br>';
-                    htmltext += '<img style="max-width:150px;" src="data:image/png;base64,'+barcode_image[index]+'" alt="barcode" /><br>';
-                    htmltext += '<strong>'+code[index]+'</strong><br>';
-                    htmltext += 'price: '+price[index];
-                    htmltext +='</td>';
-                    if(i % 2 != 0)
-                        htmltext +='</tr>';
-                    i++;
-                }
-            });*/
-            $.each(qty, function(index){
-                i = 0;
-                while(i < qty[index]) {
-                    if(i % 2 == 0)
-                        htmltext +='<tr>';
-                    // 36mm
-                    if(paper_size == 36)
-                        htmltext +='<td style="width:164px;height:88%;padding-top:7px;vertical-align:middle;text-align:center">';
-                    //24mm
-                    else if(paper_size == 24)
-                        htmltext +='<td style="width:164px;height:100%;font-size:12px;text-align:center">';
-                    //18mm
-                    else if(paper_size == 18)
-                        htmltext +='<td style="width:164px;height:100%;font-size:10px;text-align:center">';
+    $('#lims_productcodeSearch').autocomplete({
+        source: function(request, response) {
+            var matcher = new RegExp(".?" + $.ui.autocomplete.escapeRegex(request.term), "i");
+            response($.grep(lims_product_code, function(item) {
+                return matcher.test(item);
+            }));
+        },
+        select: function(event, ui) {
+            var data = ui.item.value;
+            $.ajax({
+                type: 'GET',
+                url: 'lims_product_search',
+                data: { data: data },
+                success: function(data) {
+                    var isDuplicate = false;
+                    $(".product-code").each(function() {
+                        if ($(this).text() == data[1]) {
+                            isDuplicate = true;
+                            $('#duplicate-alert').fadeIn().delay(3000).fadeOut();
+                            return false;
+                        }
+                    });
 
-                    if($('input[name="name"]').is(":checked"))
-                        htmltext += product_name[index] + '<br>';
-
-                    if(paper_size == 18)
-                        htmltext += '<img style="max-width:150px;" src="data:image/png;base64,'+barcode_image[index]+'" alt="barcode" /><br>';
-                    else
-                        htmltext += '<img style="max-width:150px;" src="data:image/png;base64,'+barcode_image[index]+'" alt="barcode" /><br>';
-
-                    htmltext += code[index] + '<br>';
-                    if($('input[name="code"]').is(":checked"))
-                        htmltext += '<strong>'+code[index]+'</strong><br>';
-                    if($('input[name="promo_price"]').is(":checked")) {
-                        if(currency_position[index] == 'prefix')
-                            htmltext += 'Price: '+currency[index]+'<span style="text-decoration: line-through;"> '+price[index]+'</span> '+promo_price[index]+'<br>';
-                        else
-                            htmltext += 'Price: <span style="text-decoration: line-through;">'+price[index]+'</span> '+promo_price[index]+' '+currency[index]+'<br>';
+                    if (!isDuplicate) {
+                        var newRow = $(`
+                            <tr data-imagedata="${data[3]}" data-price="${data[2]}" data-promo-price="${data[4]}" data-currency="${data[5]}" data-currency-position="${data[6]}">
+                                <td>${data[0]}</td>
+                                <td class="product-code">${data[1]}</td>
+                                <td><input type="number" class="form-control qty" name="qty[]" value="1" /></td>
+                                <td><button type="button" class="ibtnDel btn btn-md btn-danger">Delete</button></td>
+                            </tr>
+                        `);
+                        $("table.order-list tbody").append(newRow);
+                        updatePreview();
                     }
-                    else if($('input[name="price"]').is(":checked")) {
-                        if(currency_position[index] == 'prefix')
-                            htmltext += 'Price: '+currency[index]+' '+price[index];
-                        else
-                            htmltext += 'Price: '+price[index]+' '+currency[index];
-                    }
-                    htmltext +='</td>';
-                    if(i % 2 != 0)
-                        htmltext +='</tr>';
-                    i++;
+                    $("input[name='product_code_name']").val('');
                 }
             });
-            htmltext += '</table">';
-            $('#label-content').html(htmltext);
-            $('#print-barcode').modal('show');
         }
-        else
-            alert('Please select paper size');
     });
 
-    /*$("#print-btn").on("click", function(){
-          var divToPrint=document.getElementById('print-barcode');
-          var newWin=window.open('','Print-Window');
-          newWin.document.open();
-          newWin.document.write('<style type="text/css">@media print { #modal_header { display: none } #print-btn { display: none } #close-btn { display: none } } table.barcodelist { page-break-inside:auto } table.barcodelist tr { page-break-inside:avoid; page-break-after:auto }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
-          newWin.document.close();
-          setTimeout(function(){newWin.close();},10);
-    });*/
-
-    $("#print-btn").on("click", function() {
-          var divToPrint=document.getElementById('print-barcode');
-          var newWin=window.open('','Print-Window');
-          newWin.document.open();
-          newWin.document.write('<style type="text/css">@media print { #modal_header { display: none } #print-btn { display: none } #close-btn { display: none } } table.barcodelist { page-break-inside:auto } table.barcodelist tr { page-break-inside:avoid; page-break-after:auto }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
-          newWin.document.close();
-          setTimeout(function(){newWin.close();},10);
+    $("table.order-list tbody").on("input", ".qty", updatePreview);
+    $("table.order-list tbody").on("click", ".ibtnDel", function() {
+        $(this).closest("tr").remove();
+        updatePreview();
+    });
+    $('input[type="checkbox"][name="name"], input[type="checkbox"][name="price"], input[type="checkbox"][name="promo_price"]').on('change', updatePreview);
+    $('#paper-size').on('change', updatePreview);
+    $("#clear-all-btn").on("click", function() {
+        $("table.order-list tbody").empty();
+        updatePreview();
     });
 
+    $("#print-button-main").on("click", function() {
+        var paper_size = $("#paper-size").val();
+        if (paper_size === "0") {
+            $('#duplicate-alert').text('Please select a paper size.').fadeIn().delay(3000).fadeOut();
+            return;
+        }
+        
+        var divToPrint = document.getElementById('preview-section');
+        var newWin = window.open('', 'Print-Window');
+        newWin.document.open();
+        newWin.document.write('<style type="text/css">@media print { #modal_header, #print-btn, #close-btn { display: none; } } table.barcodelist { page-break-inside: auto; } table.barcodelist tr { page-break-inside: avoid; page-break-after: auto; }</style><body onload="window.print()">' + divToPrint.innerHTML + '</body>');
+        newWin.document.close();
+        setTimeout(function() { newWin.close(); }, 10);
+    });
+
+    $('#duplicate-alert .close').on('click', function() {
+        $(this).closest('.alert').fadeOut();
+    });
 </script>
 @endpush

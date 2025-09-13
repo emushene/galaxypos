@@ -1588,20 +1588,34 @@
             </div>
             <div class="col-6 mb-3">
               <a class="btn btn-outline-primary w-100" href="{{ route('sales.index') }}">
-                <i class="fa fa-list"></i><br>Sales List<br>(Reprint Invoice)
+                <i class="fa fa-list"></i><br>Sales List<br>
               </a>
             </div>
 
-            <div class="col-6 mb-3">
-              <a class="btn btn-outline-primary w-100" href="{{ route('cashRegister.close') }}">
-                <i class="fa fa-arrow-up"></i><br>Cash Up
-              </a>
-            </div>
+<div class="col-6 mb-3">
+  <a class="btn btn-outline-primary w-100" href="#" id="menu-cashup-btn">
+    <i class="fa fa-arrow-up"></i><br>Cash Up
+  </a>
+</div>
+<div class="col-6 mb-3">
+  <a class="btn btn-outline-primary w-100" href="#" id="menu-cashup-btn">
+    <i class="fa fa-arrow-up"></i><br>Cash Drop
+  </a>
+</div>
+<div class="col-6 mb-3">
+  <a class="btn btn-outline-primary w-100" href="#" id="menu-add-customer-btn">
+    <i class="fa fa-user-plus"></i><br>Add Customer
+  </a>
+</div>
+<div class="col-6 mb-3">
+  <a class="btn btn-outline-primary w-100" href="#" id="menu-cashup-btn">
+    <i class="fa fa-arrow-up"></i><br>Print Z Report
+  </a>
+</div>
             <div class="col-6 mb-3">
   <a class="btn btn-outline-primary w-100" href="{{ route('quotations.index') }}">
     <i class="fa fa-file-text"></i><br>Quote<br>
-    <small>Save & Print</small><br>
-    <small>Convert to Sale</small>
+    
   </a>
 </div>
 
@@ -2029,6 +2043,42 @@ $('.customer-submit-btn').on("click", function() {
       });
       $('#register-details-modal').modal('show');
   });
+
+  //Menu Button menu-cashup-btn
+
+$("#menu-cashup-btn").on("click", function (e) {
+    e.preventDefault();
+    $('#menuModal').modal('hide'); // Hide the menu modal
+    $.ajax({
+        url: 'cash-register/showDetails/' + warehouse_id,
+        type: "GET",
+        success: function (data) {
+            $('#register-details-modal #cash_in_hand').text(data['cash_in_hand']);
+            $('#register-details-modal #total_sale_amount').text(data['total_sale_amount']);
+            $('#register-details-modal #total_payment').text(data['total_payment']);
+            $('#register-details-modal #cash_payment').text(data['cash_payment']);
+            $('#register-details-modal #credit_card_payment').text(data['credit_card_payment']);
+            $('#register-details-modal #cheque_payment').text(data['cheque_payment']);
+            $('#register-details-modal #gift_card_payment').text(data['gift_card_payment']);
+            $('#register-details-modal #deposit_payment').text(data['deposit_payment']);
+            $('#register-details-modal #paypal_payment').text(data['paypal_payment']);
+            $('#register-details-modal #total_sale_return').text(data['total_sale_return']);
+            $('#register-details-modal #total_expense').text(data['total_expense']);
+            $('#register-details-modal #total_cash').text(data['total_cash']);
+            $('#register-details-modal input[name=cash_register_id]').val(data['id']);
+        }
+    });
+    $('#register-details-modal').modal('show');
+});
+
+//Add Customer Button
+$("#menu-add-customer-btn").on("click", function (e) {
+    e.preventDefault();
+    $('#menuModal').modal('hide');
+    $('#addCustomer').modal('show');
+});
+
+//Today Sale Button
 
   $("#today-sale-btn").on("click", function (e) {
       e.preventDefault();
