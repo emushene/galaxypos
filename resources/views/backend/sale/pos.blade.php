@@ -3159,7 +3159,12 @@ function addNewProduct(data){
     pos = product_code.indexOf(data[1]);
     cols += '<td class="col-sm-2 product-title"><button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"><span style="margin-left: -19px; white-space: break-spaces;"><strong>' + data[0] + '</strong></span></button><br>' + data[1] + '<p>In Stock: <span class="in-stock"></span></p></td>';
     
-    cols += '<td class="col-sm-2"><input type="text" class="form-control barcode-no" value="'+data[16]+'" disabled/> <input type="hidden" class="product-barcode" name="product_barcode[]" value="'+data[16]+'"/> </td>';
+   // cols += '<td class="col-sm-2"><input type="text" class="form-control barcode-no" value="'+data[16]+'" disabled/> <input type="hidden" class="product-barcode" name="product_barcode[]" value="'+data[16]+'"/> </td>';
+   cols += '<td class="col-sm-2 text-center">'
+      + '<img src="https://bwipjs-api.metafloor.com/?bcid=code128&text='+data[16]+'&scale=2&height=20" alt="Barcode" style="max-width:100%;height:40px;" />'
+      + '<br><small>'+data[16]+'</small>'
+      + '<input type="hidden" class="product-barcode" name="product_barcode[]" value="'+data[16]+'"/>'
+      + '</td>';
     /*if(data[12]) {
         cols += '<td class="col-sm-2"><input type="text" class="form-control batch-no" value="'+batch_no[pos]+'" required/> <input type="hidden" class="product-batch-id" name="product_batch_id[]" value="'+product_batch_id[pos]+'"/> </td>';
     }
