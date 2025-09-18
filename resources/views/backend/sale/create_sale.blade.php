@@ -1791,7 +1791,7 @@ $.get('../getcustomergroup/' + id, function(data) {
 });
 
 var id = $('select[name="warehouse_id"]').val();
-$.get('../getproduct/' + id, function(data) {
+$.get('../getproduct/' + id + '?without_stock=' + without_stock, function(data) {
     lims_product_array = [];
     product_code = data[0];
     product_name = data[1];
@@ -1860,7 +1860,7 @@ $('.category-img').on('click', function(){
     var brand_id = 0;
 
     $(".table-container").children().remove();
-    $.get('../getproduct/' + category_id + '/' + brand_id, function(data) {
+    $.get('../getproduct/' + category_id + '/' + brand_id + '?without_stock=' + without_stock, function(data) {
         var tableData = '<table id="product-table" class="table product-list"> <thead class="d-none"> <tr> <th></th> <th></th> <th></th> <th></th> <th></th> </tr></thead> <tbody><tr>';
         if (Object.keys(data).length != 0) {
             $.each(data['name'], function(index) {
@@ -1915,7 +1915,7 @@ $('.brand-img').on('click', function(){
     var category_id = 0;
 
     $(".table-container").children().remove();
-    $.get('../getproduct/' + category_id + '/' + brand_id, function(data) {
+    $.get('../getproduct/' + category_id + '/' + brand_id + '?without_stock=' + without_stock, function(data) {
         var tableData = '<table id="product-table" class="table product-list"> <thead class="d-none"> <tr> <th></th> <th></th> <th></th> <th></th> <th></th> </tr></thead> <tbody><tr>';
         if (Object.keys(data).length != 0) {
             $.each(data['name'], function(index) {
@@ -1961,7 +1961,7 @@ $('.brand-img').on('click', function(){
 
 $('#featured-filter').on('click', function(){
     $(".table-container").children().remove();
-    $.get('../getfeatured', function(data) {
+    $.get('../getfeatured' + '?without_stock=' + without_stock, function(data) {
         var tableData = '<table id="product-table" class="table product-list"> <thead class="d-none"> <tr> <th></th> <th></th> <th></th> <th></th> <th></th> </tr></thead> <tbody><tr>';
         if (Object.keys(data).length != 0) {
             $.each(data['name'], function(index) {
@@ -2014,7 +2014,7 @@ $('select[name="customer_id"]').on('change', function() {
 
 $('select[name="warehouse_id"]').on('change', function() {
     var id = $(this).val();
-    $.get('../getproduct/' + id, function(data) {
+    $.get('../getproduct/' + id + '?without_stock=' + without_stock, function(data) {
         lims_product_array = [];
         product_code = data[0];
         product_name = data[1];
@@ -2667,7 +2667,7 @@ function checkQuantity(sale_qty, flag) {
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-code').val();
     pos = product_code.indexOf(row_product_code);
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.in-stock').text(product_qty[pos]);
-    if(without_stock == 'no') {
+    if(without_stock == 0) {
       if(product_type[pos] == 'standard') {
           var operator = unit_operator[rowindex].split(',');
           var operation_value = unit_operation_value[rowindex].split(',');

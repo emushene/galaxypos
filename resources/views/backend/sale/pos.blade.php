@@ -27,26 +27,16 @@
         <div class="row">
             <audio id="mysoundclip1" preload="auto">
                 <source src="{{url('beep/beep-timber.mp3')}}"></source>
+                <source src="{{asset('beep/beep-timber.mp3')}}"></source>
             </audio>
             <audio id="mysoundclip2" preload="auto">
                 <source src="{{url('beep/beep-07.mp3')}}"></source>
+                <source src="{{asset('beep/beep-07.mp3')}}"></source>
             </audio>
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body" style="padding-bottom: 0">
                         {!! Form::open(['route' => 'sales.store', 'method' => 'post', 'files' => true, 'class' => 'payment-form']) !!}
-                        @php
-                            if($lims_pos_setting_data)
-                                $keybord_active = $lims_pos_setting_data->keybord_active;
-                            else
-                                $keybord_active = 0;
-
-                            $customer_active = DB::table('permissions')
-                              ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
-                              ->where([
-                                ['permissions.name', 'customers-add'],
-                                ['role_id', \Auth::user()->role_id] ])->first();
-                        @endphp
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
@@ -256,11 +246,12 @@
                                         <table id="myTable" class="table table-hover table-striped order-list table-fixed">
                                             <thead>
                                                 <tr>
-                                                    <th class="col-sm-2">{{trans('file.product')}}</th>
-                                                    <th class="col-sm-2">{{'BarCode No'}}</th>
+                                                    <th class="col-sm-5">{{trans('file.product')}}</th>
                                                     <th class="col-sm-2">{{trans('file.Price')}}</th>
-                                                    <th class="col-sm-3">{{trans('file.Quantity')}}</th>
-                                                    <th class="col-sm-3">{{trans('file.Subtotal')}}</th>
+                                                    <th class="col-sm-2">{{trans('file.Quantity')}}</th>
+                                                    <th class="col-sm-2">{{trans('file.Subtotal')}}</th>
+                                                    <th class="col-sm-1"><i class="dripicons-trash"></i></th>
+
                                                 </tr>
                                             </thead>
                                             <tbody id="tbody-id">
@@ -1022,8 +1013,10 @@
                             <div class="col-md-3 category-img text-center" data-category="{{$category->id}}">
                                 @if($category->image)
                                     <img  src="{{url('images/category', $category->image)}}" />
+                                    <img  src="{{asset('images/category/' . $category->image)}}" />
                                 @else
                                     <img  src="{{url('images/product/zummXD2dvAtI.png')}}" />
+                                    <img  src="{{asset('images/product/zummXD2dvAtI.png')}}" />
                                 @endif
                                 <p class="text-center">{{$category->name}}</p>
                             </div>
@@ -1044,11 +1037,13 @@
                             @if($brand->image)
                                 <div class="col-md-3 brand-img text-center" data-brand="{{$brand->id}}">
                                     <img  src="{{url('images/brand',$brand->image)}}" />
+                                    <img  src="{{asset('images/brand/' . $brand->image)}}" />
                                     <p class="text-center">{{$brand->title}}</p>
                                 </div>
                             @else
                                 <div class="col-md-3 brand-img" data-brand="{{$brand->id}}">
                                     <img  src="{{url('images/product/zummXD2dvAtI.png')}}" />
+                                    <img  src="{{asset('images/product/zummXD2dvAtI.png')}}" />
                                     <p class="text-center">{{$brand->title}}</p>
                                 </div>
                             @endif
@@ -1079,16 +1074,13 @@
                             </thead>
                             <tbody>
                             @for ($i=0; $i < ceil($product_number/5); $i++)
-                                @if($i==1)
-                                    <tr class="product-ways-class">{{'Featured Products'}}</tr>
-                                @endif
                                 <tr>
-                                    <td class="product-img sound-btn" title="{{$lims_product_list[0+$i*5]->name}}" data-product ="{{$lims_product_list[0+$i*5]->code . ' (' . $lims_product_list[0+$i*5]->name . ')'}}"><img  src="{{url('images/product',$lims_product_list[0+$i*5]->base_image)}}" width="100%" />
+                                    <td class="product-img sound-btn" title="{{$lims_product_list[0+$i*5]->name}}" data-product ="{{$lims_product_list[0+$i*5]->code . ' (' . $lims_product_list[0+$i*5]->name . ')'}}"><img  src="{{asset('images/product/' . $lims_product_list[0+$i*5]->base_image)}}" width="100%" />
                                         <p>{{$lims_product_list[0+$i*5]->name}}</p>
                                         <span>{{$lims_product_list[0+$i*5]->code}}</span>
                                     </td>
                                     @if(!empty($lims_product_list[1+$i*5]))
-                                    <td class="product-img sound-btn" title="{{$lims_product_list[1+$i*5]->name}}" data-product ="{{$lims_product_list[1+$i*5]->code . ' (' . $lims_product_list[1+$i*5]->name . ')'}}"><img  src="{{url('images/product',$lims_product_list[1+$i*5]->base_image)}}" width="100%" />
+                                    <td class="product-img sound-btn" title="{{$lims_product_list[1+$i*5]->name}}" data-product ="{{$lims_product_list[1+$i*5]->code . ' (' . $lims_product_list[1+$i*5]->name . ')'}}"><img  src="{{asset('images/product/' . $lims_product_list[1+$i*5]->base_image)}}" width="100%" />
                                         <p>{{$lims_product_list[1+$i*5]->name}}</p>
                                         <span>{{$lims_product_list[1+$i*5]->code}}</span>
                                     </td>
@@ -1096,7 +1088,7 @@
                                     <td style="border:none;"></td>
                                     @endif
                                     @if(!empty($lims_product_list[2+$i*5]))
-                                    <td class="product-img sound-btn" title="{{$lims_product_list[2+$i*5]->name}}" data-product ="{{$lims_product_list[2+$i*5]->code . ' (' . $lims_product_list[2+$i*5]->name . ')'}}"><img  src="{{url('images/product',$lims_product_list[2+$i*5]->base_image)}}" width="100%" />
+                                    <td class="product-img sound-btn" title="{{$lims_product_list[2+$i*5]->name}}" data-product ="{{$lims_product_list[2+$i*5]->code . ' (' . $lims_product_list[2+$i*5]->name . ')'}}"><img  src="{{asset('images/product/' . $lims_product_list[2+$i*5]->base_image)}}" width="100%" />
                                         <p>{{$lims_product_list[2+$i*5]->name}}</p>
                                         <span>{{$lims_product_list[2+$i*5]->code}}</span>
                                     </td>
@@ -1104,7 +1096,7 @@
                                     <td style="border:none;"></td>
                                     @endif
                                     @if(!empty($lims_product_list[3+$i*5]))
-                                    <td class="product-img sound-btn" title="{{$lims_product_list[3+$i*5]->name}}" data-product ="{{$lims_product_list[3+$i*5]->code . ' (' . $lims_product_list[3+$i*5]->name . ')'}}"><img  src="{{url('images/product',$lims_product_list[3+$i*5]->base_image)}}" width="100%" />
+                                    <td class="product-img sound-btn" title="{{$lims_product_list[3+$i*5]->name}}" data-product ="{{$lims_product_list[3+$i*5]->code . ' (' . $lims_product_list[3+$i*5]->name . ')'}}"><img  src="{{asset('images/product/' . $lims_product_list[3+$i*5]->base_image)}}" width="100%" />
                                         <p>{{$lims_product_list[3+$i*5]->name}}</p>
                                         <span>{{$lims_product_list[3+$i*5]->code}}</span>
                                     </td>
@@ -1112,7 +1104,7 @@
                                     <td style="border:none;"></td>
                                     @endif
                                     @if(!empty($lims_product_list[4+$i*5]))
-                                    <td class="product-img sound-btn" title="{{$lims_product_list[4+$i*5]->name}}" data-product ="{{$lims_product_list[4+$i*5]->code . ' (' . $lims_product_list[4+$i*5]->name . ')'}}"><img  src="{{url('images/product',$lims_product_list[4+$i*5]->base_image)}}" width="100%" />
+                                    <td class="product-img sound-btn" title="{{$lims_product_list[4+$i*5]->name}}" data-product ="{{$lims_product_list[4+$i*5]->code . ' (' . $lims_product_list[4+$i*5]->name . ')'}}"><img  src="{{asset('images/product/' . $lims_product_list[4+$i*5]->base_image)}}" width="100%" />
                                         <p>{{$lims_product_list[4+$i*5]->name}}</p>
                                         <span>{{$lims_product_list[4+$i*5]->code}}</span>
                                     </td>
@@ -1257,11 +1249,10 @@
                                   </thead>
                                   <tbody>
                                     @foreach($recent_sale as $sale)
-                                    <?php $customer = DB::table('customers')->find($sale->customer_id); ?>
                                     <tr>
                                       <td>{{date('d-m-Y', strtotime($sale->created_at))}}</td>
                                       <td>{{$sale->reference_no}}</td>
-                                      <td>{{$customer->name}}</td>
+                                      <td>{{$sale->customer->name}}</td>
                                       <td>{{$sale->grand_total}}</td>
                                       <td>
                                         <div class="btn-group">
@@ -1295,11 +1286,10 @@
                                   </thead>
                                   <tbody>
                                     @foreach($recent_draft as $draft)
-                                    <?php $customer = DB::table('customers')->find($draft->customer_id); ?>
                                     <tr>
                                       <td>{{date('d-m-Y', strtotime($draft->created_at))}}</td>
                                       <td>{{$draft->reference_no}}</td>
-                                      <td>{{$customer->name}}</td>
+                                      <td>{{$draft->customer->name}}</td>
                                       <td>{{$draft->grand_total}}</td>
                                       <td>
                                         <div class="btn-group">
@@ -2165,7 +2155,7 @@ $.get('sales/getcustomergroup/' + id, function(data) {
 });
 
 var id = $("#warehouse_id").val();
-$.get('sales/getproduct/' + id, function(data) {
+$.get('sales/getproduct/' + id + '?without_stock=' + without_stock, function(data) {
     lims_product_array = [];
     product_code = data[0];
     product_name = data[1];
@@ -2268,7 +2258,7 @@ $('.category-img').on('click', function(){
     var brand_id = 0;
 
     $(".table-container").children().remove();
-    $.get('sales/getproduct/' + category_id + '/' + brand_id, function(data) {
+    $.get('sales/getproduct/' + category_id + '/' + brand_id + '?without_stock=' + without_stock, function(data) {
         populateProduct(data);
     });
 });
@@ -2285,14 +2275,14 @@ $('.brand-img').on('click', function(){
     var category_id = 0;
 
     $(".table-container").children().remove();
-    $.get('sales/getproduct/' + category_id + '/' + brand_id, function(data) {
+    $.get('sales/getproduct/' + category_id + '/' + brand_id + '?without_stock=' + without_stock, function(data) {
         populateProduct(data);
     });
 });
 
 $('#featured-filter').on('click', function(){
     $(".table-container").children().remove();
-    $.get('sales/getfeatured', function(data) {
+    $.get('sales/getfeatured' + '?without_stock=' + without_stock, function(data) {
         populateProduct(data);
     });
 });
@@ -2358,7 +2348,7 @@ $('select[name="biller_id"]').on('change', function() {
 $('select[name="warehouse_id"]').on('change', function() {
     saveValue(this);
     warehouse_id = $(this).val();
-    $.get('sales/getproduct/' + warehouse_id, function(data) {
+    $.get('sales/getproduct/' + warehouse_id + '?without_stock=' + without_stock, function(data) {
         lims_product_array = [];
         product_code = data[0];
         product_name = data[1];
@@ -2392,10 +2382,14 @@ lims_productcodeSearch.autocomplete({
         }));
     },
     response: function(event, ui) {
-        if (ui.content.length == 1) {
+        if (ui.content.length == 1) { //This is for barcode scanner
             var data = ui.content[0].value;
-            $(this).autocomplete( "close" );
-            productSearch(data);
+            var code_from_autocomplete = data.substring(0, data.indexOf(' ('));
+            var current_input = $('#lims_productcodeSearch').val();
+            if(code_from_autocomplete === current_input) {
+                $(this).autocomplete( "close" );
+                productSearch(data);
+            }
         }
         else if(ui.content.length == 0 && $('#lims_productcodeSearch').val().length == 13) {
           productSearch($('#lims_productcodeSearch').val()+'|'+1);
@@ -3157,14 +3151,10 @@ function addNewProduct(data){
     var cols = '';
     temp_unit_name = (data[6]).split(',');
     pos = product_code.indexOf(data[1]);
-    cols += '<td class="col-sm-2 product-title"><button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"><span style="margin-left: -19px; white-space: break-spaces;"><strong>' + data[0] + '</strong></span></button><br>' + data[1] + '<p>In Stock: <span class="in-stock"></span></p></td>';
+    cols += '<td class="col-sm-5 product-title"><button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"><span style="margin-left: -19px; white-space: break-spaces;"><strong>' + data[0] + '</strong></span></button><br>' + data[1] + '<p>In Stock: <span class="in-stock"></span></p></td>';
     
    // cols += '<td class="col-sm-2"><input type="text" class="form-control barcode-no" value="'+data[16]+'" disabled/> <input type="hidden" class="product-barcode" name="product_barcode[]" value="'+data[16]+'"/> </td>';
-   cols += '<td class="col-sm-2 text-center">'
-      + '<img src="https://bwipjs-api.metafloor.com/?bcid=code128&text='+data[16]+'&scale=2&height=20" alt="Barcode" style="max-width:100%;height:40px;" />'
-      + '<br><small>'+data[16]+'</small>'
-      + '<input type="hidden" class="product-barcode" name="product_barcode[]" value="'+data[16]+'"/>'
-      + '</td>';
+  
     /*if(data[12]) {
         cols += '<td class="col-sm-2"><input type="text" class="form-control batch-no" value="'+batch_no[pos]+'" required/> <input type="hidden" class="product-batch-id" name="product_batch_id[]" value="'+product_batch_id[pos]+'"/> </td>';
     }
@@ -3172,7 +3162,7 @@ function addNewProduct(data){
         cols += '<td class="col-sm-2"><input type="text" class="form-control batch-no" disabled/> <input type="hidden" class="product-batch-id" name="product_batch_id[]"/> </td>';
     }*/
     cols += '<td class="col-sm-2 product-price"></td>';
-    cols += '<td class="col-sm-3"><div class="input-group"><span class="input-group-btn"><button type="button" class="btn btn-default minus"><span class="dripicons-minus"></span></button></span><input type="text" name="qty[]" class="form-control qty numkey input-number" step="any" value="'+data[15]+'" required><span class="input-group-btn"><button type="button" class="btn btn-default plus"><span class="dripicons-plus"></span></button></span></div></td>';
+    cols += '<td class="col-sm-2"><div class="input-group"><span class="input-group-btn"><button type="button" class="btn btn-default minus"><span class="dripicons-minus"></span></button></span><input type="text" name="qty[]" class="form-control qty numkey input-number" step="any" value="'+data[15]+'" required><span class="input-group-btn"><button type="button" class="btn btn-default plus"><span class="dripicons-plus"></span></button></span></div></td>';
     cols += '<td class="col-sm-2 sub-total"></td>';
     @if(in_array("pos_void", $all_permission))
     cols += '<td class="col-sm-1"><button type="button" class="ibtnDel btn btn-danger btn-sm"><i class="dripicons-cross"></i></button></td>';
@@ -3413,7 +3403,7 @@ function checkQuantity(sale_qty, flag) {
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.in-stock').text(product_qty[pos]);
     localStorageQty[rowindex] = sale_qty;
     localStorage.setItem("localStorageQty", localStorageQty);
-    if(without_stock == 'no') {
+    if(without_stock == 0) {
         if(product_type[pos] == 'standard') {
             var operator = unit_operator[rowindex].split(',');
             var operation_value = unit_operation_value[rowindex].split(',');

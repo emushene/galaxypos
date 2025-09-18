@@ -635,3 +635,14 @@ Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('su
 
     // Cancel a subscription
 Route::post('/subscriptions/{id}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+
+// stock count internal stock 
+//Route::get('stock-count/internal/{warehouse_id}', [StockCountController::class, 'internalStockCount']);
+//Route::post('stock-count/update/{id}', [StockCountController::class, 'updateStockCount']);
+Route::post('stock-count/{id}/delete', [StockCountController::class, 'destroy']);
+Route::post('stock-count/finalize', [StockCountController::class, 'finalize'])->name('stock-count.finalize');
+Route::get('/internal-stock-count/{warehouse_id}', [StockCountController::class, 'internalStockCount']);
+Route::post('/stock-count/update/{id}', [StockCountController::class, 'updateStockCount']);
+
+// Procuct controller
+Route::get('/products/data', [ProductController::class, 'getProductsData'])->name('products.data');

@@ -633,7 +633,7 @@ function edit(){
 function checkQuantity(sale_qty, flag) {
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(2)').text();
     pos = product_code.indexOf(row_product_code);
-    if(without_stock == 'no') {
+    if(false) {
         if(product_type[pos] == 'standard'){
             var operator = unit_operator[rowindex].split(',');
             var operation_value = unit_operation_value[rowindex].split(',');

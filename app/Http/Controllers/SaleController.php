@@ -1923,23 +1923,18 @@ class SaleController extends Controller
         return redirect('sales')->with('message', 'Payment created successfully');
     }
 
-    public function getProduct($id)
+    public function getProduct(Request $request, $id)
     {
-        $query = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id');
-        if(config('without_stock') == 'no') {
-            $query = $query->where([
-                ['products.is_active', true],
-                ['product_warehouse.warehouse_id', $id],
-                ['product_warehouse.qty', '>', 0]
-            ]);
+        $baseQuery = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id')->where([
+            ['products.is_active', true],
+            ['product_warehouse.warehouse_id', $id]
+        ]);
+
+        if ($request->without_stock != '1') {
+            $baseQuery->where('product_warehouse.qty', '>', 0);
         }
-        else {
-            $query = $query->where([
-                ['products.is_active', true],
-                ['product_warehouse.warehouse_id', $id]
-            ]);
-        } 
-        $lims_product_warehouse_data = $query->whereNull('product_warehouse.variant_id')
+
+        $lims_product_warehouse_data = (clone $baseQuery)->whereNull('product_warehouse.variant_id')
                                         ->whereNull('product_warehouse.product_batch_id')
                                         ->select('product_warehouse.*',  'products.is_embeded')
                                         ->get();
@@ -1947,23 +1942,7 @@ class SaleController extends Controller
         config()->set('database.connections.mysql.strict', false);
         \DB::reconnect(); //important as the existing connection if any would be in strict mode
 
-        $query = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id');
-
-        if(config('without_stock') == 'no') {
-            $query = $query->where([
-                ['products.is_active', true],
-                ['product_warehouse.warehouse_id', $id],
-                ['product_warehouse.qty', '>', 0]
-            ]);
-        }
-        else {
-            $query = $query->where([
-                ['products.is_active', true],
-                ['product_warehouse.warehouse_id', $id]
-            ]);
-        }
-
-        $lims_product_with_batch_warehouse_data = $query->whereNull('product_warehouse.variant_id')
+        $lims_product_with_batch_warehouse_data = (clone $baseQuery)->whereNull('product_warehouse.variant_id')
         ->whereNotNull('product_warehouse.product_batch_id')
         ->select('product_warehouse.*', 'products.is_embeded')
         ->groupBy('product_warehouse.product_id')
@@ -1973,21 +1952,7 @@ class SaleController extends Controller
         config()->set('database.connections.mysql.strict', true);
         \DB::reconnect();
 
-        $query = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id');
-        if(config('without_stock') == 'no') {
-            $query = $query->where([
-                ['products.is_active', true],
-                ['product_warehouse.warehouse_id', $id],
-                ['product_warehouse.qty', '>', 0]
-            ]);
-        }
-        else {
-            $query = $query->where([
-                ['products.is_active', true],
-                ['product_warehouse.warehouse_id', $id],
-            ]);
-        }
-        $lims_product_with_variant_warehouse_data = $query->whereNotNull('product_warehouse.variant_id')
+        $lims_product_with_variant_warehouse_data = (clone $baseQuery)->whereNotNull('product_warehouse.variant_id')
         ->select('product_warehouse.*', 'products.is_embeded')
         ->get();
 
@@ -2067,7 +2032,11 @@ class SaleController extends Controller
             }
         }
         //retrieve product with type of digital, combo and service
-        $lims_product_data = Product::whereNotIn('type', ['standard'])->where('is_active', true)->get();
+        $lims_product_data_query = Product::whereNotIn('type', ['standard'])->where('is_active', true);
+        if ($request->without_stock != '1') {
+            $lims_product_data_query->where('qty', '>', 0);
+        }
+        $lims_product_data = $lims_product_data_query->get();
         foreach ($lims_product_data as $product)
         {
             $product_qty[] = $product->qty;
@@ -2095,6 +2064,7 @@ class SaleController extends Controller
                 $all_permission[] = $permission->name;
             if(empty($all_permission))
                 $all_permission[] = 'dummy text';
+            $customer_active = in_array("customers-add", $all_permission);
 
             $lims_customer_list = Cache::remember('customer_list', 60*60*24, function () {
                 return Customer::where('is_active', true)->get();
@@ -2146,6 +2116,7 @@ class SaleController extends Controller
             $lims_pos_setting_data = Cache::remember('pos_setting', 60*60*24*30, function () {
                 return PosSetting::latest()->first();
             });
+            $keybord_active = $lims_pos_setting_data ? $lims_pos_setting_data->keybord_active : 0;
             if($lims_pos_setting_data)
                 $options = explode(',', $lims_pos_setting_data->payment_options);
             else
@@ -2161,18 +2132,18 @@ class SaleController extends Controller
             });
             //return $lims_category_list;
             if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
-                $recent_sale = Sale::select('id','reference_no','customer_id','grand_total','created_at')->where([
+                $recent_sale = Sale::with('customer')->where([
                     ['sale_status', 1],
                     ['user_id', Auth::id()]
                 ])->orderBy('id', 'desc')->take(10)->get();
-                $recent_draft = Sale::select('id','reference_no','customer_id','grand_total','created_at')->where([
+                $recent_draft = Sale::with('customer')->where([
                     ['sale_status', 3],
                     ['user_id', Auth::id()]
                 ])->orderBy('id', 'desc')->take(10)->get();
             }
             else {
-                $recent_sale = Sale::select('id','reference_no','customer_id','grand_total','created_at')->where('sale_status', 1)->orderBy('id', 'desc')->take(10)->get();
-                $recent_draft = Sale::select('id','reference_no','customer_id','grand_total','created_at')->where('sale_status', 3)->orderBy('id', 'desc')->take(10)->get();
+                $recent_sale = Sale::with('customer')->where('sale_status', 1)->orderBy('id', 'desc')->take(10)->get();
+                $recent_draft = Sale::with('customer')->where('sale_status', 3)->orderBy('id', 'desc')->take(10)->get();
             }
             $lims_coupon_list = Cache::remember('coupon_list', 60*60*24*30, function () {
                 return Coupon::where('is_active',true)->get();
@@ -2182,7 +2153,7 @@ class SaleController extends Controller
             $currency_list = Currency::where('is_active', true)->get();
             $numberOfInvoice = Sale::count();
             $custom_fields = CustomField::where('belongs_to', 'sale')->get();
-            return view('backend.sale.pos', compact('currency_list','role','all_permission', 'lims_customer_list', 'lims_customer_group_all', 'lims_warehouse_list', 'lims_reward_point_setting_data', 'lims_product_list', 'product_number', 'lims_tax_list', 'lims_biller_list', 'lims_pos_setting_data', 'options', 'lims_brand_list', 'lims_category_list', 'lims_table_list', 'recent_sale', 'recent_draft', 'lims_coupon_list', 'flag', 'numberOfInvoice', 'custom_fields'));
+            return view('backend.sale.pos', compact('currency_list','role','all_permission', 'lims_customer_list', 'lims_customer_group_all', 'lims_warehouse_list', 'lims_reward_point_setting_data', 'lims_product_list', 'product_number', 'lims_tax_list', 'lims_biller_list', 'lims_pos_setting_data', 'options', 'lims_brand_list', 'lims_category_list', 'lims_table_list', 'recent_sale', 'recent_draft', 'lims_coupon_list', 'flag', 'numberOfInvoice', 'custom_fields', 'customer_active', 'keybord_active'));
         }
         else
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
@@ -2253,20 +2224,28 @@ class SaleController extends Controller
                                 ])->orWhere([
                                     ['categories.parent_id', $category_id],
                                     ['products.is_active', true]
-                                ])->select('products.id', 'products.name', 'products.code', 'products.image', 'products.is_variant')->get();
+                                ]);
+            if ($request->without_stock != '1') {
+                $query->where('products.qty', '>', 0);
+            }
+            $lims_product_list = $query->select('products.id', 'products.name', 'products.code', 'products.image', 'products.is_variant')->get();
         }
         elseif(($category_id == 0) && ($brand_id != 0)){
             $p_type = 'Brand Products';
-            $lims_product_list = Product::where([
+            $query = Product::where([
                                 ['brand_id', $brand_id],
                                 ['is_active', true]
-                            ])
-                            ->select('products.id', 'products.name', 'products.code', 'products.image', 'products.is_variant')
-                            ->get();
+                            ]);
+            if ($request->without_stock != '1') {
+                $query->where('qty', '>', 0);
+            }
+            $lims_product_list = $query->select('products.id', 'products.name', 'products.code', 'products.image', 'products.is_variant')->get();
         }
         else{
             $p_type = 'All Products';
-            $lims_product_list = Product::where('is_active', true)->get();
+            $query = Product::where('is_active', true);
+            if ($request->without_stock != '1') { $query->where('qty', '>', 0); }
+            $lims_product_list = $query->get();
         }
         $index = 0;
         foreach ($lims_product_list as $product) {
@@ -2294,14 +2273,18 @@ class SaleController extends Controller
         return $data;
     }
 
-    public function getFeatured()
+    public function getFeatured(Request $request)
     {
         $data = [];
         
-        $lims_product_list = Product::where([
+        $query = Product::where([
             ['is_active', true],
             ['featured', true]
-        ])->select('products.id', 'products.name', 'products.code', 'products.image', 'products.is_variant')->get();
+        ]);
+        if ($request->without_stock != '1') {
+            $query->where('qty', '>', 0);
+        }
+        $lims_product_list = $query->select('products.id', 'products.name', 'products.code', 'products.image', 'products.is_variant')->get();
 
         $index = 0;
         foreach ($lims_product_list as $product) {

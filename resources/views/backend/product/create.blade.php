@@ -1,5 +1,4 @@
 @extends('backend.layout.main')
-
 @section('content')
 <section class="forms">
     <div class="container-fluid">
@@ -13,9 +12,10 @@
                         <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
                         <form id="product-form">
                             <div class="row">
+                                <!-- Product Type -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Product Type')}} *</strong> </label>
+                                        <label>{{trans('file.Product Type')}} *</label>
                                         <div class="input-group">
                                             <select name="type" required class="form-control selectpicker" id="type">
                                                 <option value="standard">Standard</option>
@@ -26,59 +26,70 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Product Name -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Product Name')}} *</strong> </label>
-                                        <input type="text" name="name" class="form-control" id="name" aria-describedby="name" required>
+                                        <label>{{trans('file.Product Name')}} *</label>
+                                        <input type="text" name="name" class="form-control" id="name" required>
                                         <span class="validation-msg" id="name-error"></span>
                                     </div>
                                 </div>
+
+                                <!-- Product Code -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Product Code')}} *</strong> </label>
+                                        <label>{{trans('file.Product Code')}} *</label>
                                         <div class="input-group">
-                                            <input type="text" name="code" class="form-control" id="code" aria-describedby="code" required>
+                                            <input type="text" name="code" class="form-control" id="code" required>
                                             <div class="input-group-append">
-                                                <button id="genbutton" type="button" class="btn btn-sm btn-default" title="{{trans('file.Generate')}}"><i class="fa fa-refresh"></i></button>
+                                                <button id="genbutton" type="button" class="btn btn-sm btn-default" title="{{trans('file.Generate')}}">
+                                                    <i class="fa fa-refresh"></i>
+                                                </button>
                                             </div>
                                         </div>
                                         <span class="validation-msg" id="code-error"></span>
                                     </div>
                                 </div>
-                                <!-- NEW Feild -->
+
+                                <!-- Product Barcode -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{'Product Barcode'}}</strong> </label>
+                                        <label>{{'Product Barcode'}}</label>
                                         <div class="input-group">
-                                            <input type="text" name="prodcut_barcode" class="form-control" id="prodcut_barcode" aria-describedby="code">
+                                            <input type="text" name="prodcut_barcode" class="form-control" id="prodcut_barcode">
                                         </div>
-                                        <span class="validation-msg" id="code-error"></span>
+                                        <span class="validation-msg" id="barcode-error"></span>
                                     </div>
                                 </div>
+
+                                <!-- Barcode Symbology -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Barcode Symbology')}} *</strong> </label>
-                                        <div class="input-group">
-                                            <select name="barcode_symbology" required class="form-control selectpicker">
-                                                <option value="C128">Code 128</option>
-                                                <option value="C39">Code 39</option>
-                                                <option value="UPCA">UPC-A</option>
-                                                <option value="UPCE">UPC-E</option>
-                                                <option value="EAN8">EAN-8</option>
-                                                <option value="EAN13">EAN-13</option>
-                                            </select>
-                                        </div>
+                                        <label>{{trans('file.Barcode Symbology')}} *</label>
+                                        <select name="barcode_symbology" required class="form-control selectpicker">
+                                            <option value="C128">Code 128</option>
+                                            <option value="C39">Code 39</option>
+                                            <option value="UPCA">UPC-A</option>
+                                            <option value="UPCE">UPC-E</option>
+                                            <option value="EAN8">EAN-8</option>
+                                            <option value="EAN13">EAN-13</option>
+                                        </select>
                                     </div>
                                 </div>
+
+                                <!-- Attach File (Digital Product) -->
                                 <div id="digital" class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Attach File')}} *</strong> </label>
+                                        <label>{{trans('file.Attach File')}} *</label>
                                         <div class="input-group">
                                             <input type="file" id="file" name="file" class="form-control">
                                         </div>
                                         <span class="validation-msg"></span>
                                     </div>
                                 </div>
+
+                                <!-- Combo Products -->
                                 <div id="combo" class="col-md-9 mb-1">
                                     <label>{{trans('file.add_product')}}</label>
                                     <div class="search-box input-group mb-3">
@@ -96,102 +107,105 @@
                                                     <th><i class="dripicons-trash"></i></th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                            </tbody>
+                                            <tbody></tbody>
                                         </table>
                                     </div>
                                 </div>
+
+                                <!-- Brand -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Brand')}}</strong> </label>
+                                        <label>{{trans('file.Brand')}}</label>
                                         <div class="input-group">
-                                          <select name="brand_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select Brand...">
-                                            @foreach($lims_brand_list as $brand)
-                                                <option value="{{$brand->id}}">{{$brand->title}}</option>
-                                            @endforeach
-                                          </select>
-                                      </div>
+                                            <select name="brand_id" class="selectpicker form-control" data-live-search="true" title="Select Brand...">
+                                                @foreach($lims_brand_list as $brand)
+                                                    <option value="{{$brand->id}}">{{$brand->title}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- Category -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.category')}} *</strong> </label>
+                                        <label>{{trans('file.category')}} *</label>
                                         <div class="input-group">
-                                          <select name="category_id" required class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select Category...">
-                                            @foreach($lims_category_list as $category)
-                                                <option value="{{$category->id}}">{{$category->name}}</option>
-                                            @endforeach
-                                          </select>
-                                      </div>
-                                      <span class="validation-msg"></span>
+                                            <select name="category_id" required class="selectpicker form-control" data-live-search="true" title="Select Category...">
+                                                @foreach($lims_category_list as $category)
+                                                    <option value="{{$category->id}}">{{$category->name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <span class="validation-msg"></span>
                                     </div>
                                 </div>
+
+                                <!-- Units -->
                                 <div id="unit" class="col-md-12">
-                                    <div class="row ">
+                                    <div class="row">
                                         <div class="col-md-4 form-group">
-                                                <label>{{trans('file.Product Unit')}} *</strong> </label>
-                                                <div class="input-group">
-                                                  <select required class="form-control selectpicker" name="unit_id">
-                                                    <option value="" disabled selected>Select Product Unit...</option>
-                                                    @foreach($lims_unit_list as $unit)
-                                                        @if($unit->base_unit==null)
-                                                            <option value="{{$unit->id}}">{{$unit->unit_name}}</option>
-                                                        @endif
-                                                    @endforeach
-                                                  </select>
-                                              </div>
-                                              <span class="validation-msg"></span>
+                                            <label>{{trans('file.Product Unit')}} *</label>
+                                            <select required class="form-control selectpicker" name="unit_id">
+                                                <option value="" disabled selected>Select Product Unit...</option>
+                                                @foreach($lims_unit_list as $unit)
+                                                    @if($unit->base_unit==null)
+                                                        <option value="{{$unit->id}}">{{$unit->unit_name}}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            <span class="validation-msg"></span>
                                         </div>
                                         <div class="col-md-4">
-                                                <label>{{trans('file.Sale Unit')}}</strong> </label>
-                                                <div class="input-group">
-                                                  <select class="form-control selectpicker" name="sale_unit_id">
-                                                  </select>
-                                              </div>
+                                            <label>{{trans('file.Sale Unit')}}</label>
+                                            <select class="form-control selectpicker" name="sale_unit_id"></select>
                                         </div>
                                         <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label>{{trans('file.Purchase Unit')}}</strong> </label>
-                                                    <div class="input-group">
-                                                      <select class="form-control selectpicker" name="purchase_unit_id">
-                                                      </select>
-                                                  </div>
-                                                </div>
+                                            <label>{{trans('file.Purchase Unit')}}</label>
+                                            <select class="form-control selectpicker" name="purchase_unit_id"></select>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Cost & Price -->
                                 <div id="cost" class="col-md-4">
-                                     <div class="form-group">
-                                        <label>{{trans('file.Product Cost')}} *</strong> </label>
+                                    <div class="form-group">
+                                        <label>{{trans('file.Product Cost')}} *</label>
                                         <input type="number" name="cost" required class="form-control" step="any">
                                         <span class="validation-msg"></span>
                                     </div>
                                 </div>
+
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Product Price')}} *</strong> </label>
+                                        <label>{{trans('file.Product Price')}} *</label>
                                         <input type="number" name="price" required class="form-control" step="any">
                                         <span class="validation-msg"></span>
                                     </div>
-                                    <div class="form-group">
-                                        <input type="hidden" name="qty" value="{{number_format(0, $general_setting->decimal, '.', '')}}">
-                                    </div>
+                                    <input type="hidden" name="qty" value="{{number_format(0, $general_setting->decimal, '.', '')}}">
                                 </div>
+
+                                <!-- Daily Sale Objective -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Daily Sale Objective')}}</strong></label> <i class="dripicons-question" data-toggle="tooltip" title="{{trans('file.Minimum qty which must be sold in a day. If not, you will be notified on dashboard. But you have to set up the cron job properly for that. Follow the documentation in that regard.')}}"></i>
+                                        <label>{{trans('file.Daily Sale Objective')}}</label>
+                                        <i class="dripicons-question" data-toggle="tooltip" title="{{trans('file.Minimum qty which must be sold in a day. If not, you will be notified on dashboard.')}}"></i>
                                         <input type="number" name="daily_sale_objective" class="form-control" step="any">
                                     </div>
                                 </div>
+
+                                <!-- Alert Quantity -->
                                 <div id="alert-qty" class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Alert Quantity')}}</strong> </label>
+                                        <label>{{trans('file.Alert Quantity')}}</label>
                                         <input type="number" name="alert_quantity" class="form-control" step="any">
                                     </div>
                                 </div>
+
+                                <!-- Tax & Tax Method -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Product Tax')}}</strong> </label>
+                                        <label>{{trans('file.Product Tax')}}</label>
                                         <select name="tax_id" class="form-control selectpicker">
                                             <option value="">No Tax</option>
                                             @foreach($lims_tax_list as $tax)
@@ -200,15 +214,19 @@
                                         </select>
                                     </div>
                                 </div>
+
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Tax Method')}}</strong> </label> <i class="dripicons-question" data-toggle="tooltip" title="{{trans('file.Exclusive: Poduct price = Actual product price + Tax. Inclusive: Actual product price = Product price - Tax')}}"></i>
+                                        <label>{{trans('file.Tax Method')}}</label>
+                                        <i class="dripicons-question" data-toggle="tooltip" title="{{trans('file.Exclusive: Poduct price = Actual product price + Tax. Inclusive: Actual product price = Product price - Tax')}}"></i>
                                         <select name="tax_method" class="form-control selectpicker">
                                             <option value="1">{{trans('file.Exclusive')}}</option>
                                             <option value="2">{{trans('file.Inclusive')}}</option>
                                         </select>
                                     </div>
                                 </div>
+
+                                <!-- Custom Fields -->
                                 @foreach($custom_fields as $field)
                                 @if(!$field->is_admin || \Auth::user()->role_id == 1)
                                     <div class="{{'col-md-'.$field->grid_value}}">
@@ -219,15 +237,14 @@
                                             @elseif($field->type == 'number')
                                                 <input type="number" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$field->default_value}}" class="form-control" @if($field->is_required){{'required'}}@endif>
                                             @elseif($field->type == 'textarea')
-                                                <textarea rows="5" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$field->default_value}}" class="form-control" @if($field->is_required){{'required'}}@endif></textarea>
+                                                <textarea rows="5" name="{{str_replace(' ', '_', strtolower($field->name))}}" class="form-control" @if($field->is_required){{'required'}}@endif>{{$field->default_value}}</textarea>
                                             @elseif($field->type == 'checkbox')
                                                 <br>
                                                 <?php $option_values = explode(",", $field->option_value); ?>
                                                 @foreach($option_values as $value)
                                                     <label>
                                                         <input type="checkbox" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
-                                                    </label>
-                                                    &nbsp;
+                                                    </label>&nbsp;
                                                 @endforeach
                                             @elseif($field->type == 'radio_button')
                                                 <br>
@@ -235,8 +252,7 @@
                                                 @foreach($option_values as $value)
                                                     <label class="radio-inline">
                                                         <input type="radio" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
-                                                    </label>
-                                                    &nbsp;
+                                                    </label>&nbsp;
                                                 @endforeach
                                             @elseif($field->type == 'select')
                                                 <?php $option_values = explode(",", $field->option_value); ?>
@@ -258,27 +274,27 @@
                                         </div>
                                     </div>
                                 @endif
-                            @endforeach
-                                <div class="col-md-4">
-                                    <div class="form-group mt-3">
-                                        <input type="checkbox" name="is_initial_stock" value="1">&nbsp;
-                                        <label>{{trans('file.Initial Stock')}}</label>
-                                        <p class="italic">{{trans('file.This feature will not work for product with variants and batches')}}</p>
-                                    </div>
+                                @endforeach
+
+                                <!-- Checkboxes: Initial Stock, Featured, Embedded Barcode -->
+                                <div class="col-md-4 mt-3">
+                                    <input type="checkbox" name="is_initial_stock" value="1">&nbsp;
+                                    <label>{{trans('file.Initial Stock')}}</label>
+                                    <p class="italic">{{trans('file.This feature will not work for product with variants and batches')}}</p>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group mt-3">
-                                        <input type="checkbox" name="featured" value="1">&nbsp;
-                                        <label>{{trans('file.Featured')}}</label>
-                                        <p class="italic">{{trans('file.Featured product will be displayed in POS')}}</p>
-                                    </div>
+
+                                <div class="col-md-4 mt-3">
+                                    <input type="checkbox" name="featured" value="1">&nbsp;
+                                    <label>{{trans('file.Featured')}}</label>
+                                    <p class="italic">{{trans('file.Featured product will be displayed in POS')}}</p>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group mt-3">
-                                        <input type="checkbox" name="is_embeded" value="1">&nbsp;
-                                        <label>{{trans('file.Embedded Barcode')}} <i class="dripicons-question" data-toggle="tooltip" title="{{trans('file.Check this if this product will be used in weight scale machine.')}}"></i></label>
-                                    </div>
+
+                                <div class="col-md-4 mt-3">
+                                    <input type="checkbox" name="is_embeded" value="1">&nbsp;
+                                    <label>{{trans('file.Embedded Barcode')}} <i class="dripicons-question" data-toggle="tooltip" title="{{trans('file.Check this if this product will be used in weight scale machine.')}}"></i></label>
                                 </div>
+
+                                <!-- Initial Stock Table -->
                                 <div class="col-md-6" id="initial-stock-section">
                                     <div class="table-responsive ml-2">
                                         <table class="table table-hover">
@@ -297,24 +313,30 @@
                                                 </tr>
                                                 @endforeach
                                             </thead>
-                                            <tbody>
-                                            </tbody>
+                                            <tbody></tbody>
                                         </table>
                                     </div>
                                 </div>
+
+                                <!-- Product Image -->
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>{{trans('file.Product Image')}}</strong> </label> <i class="dripicons-question" data-toggle="tooltip" title="{{trans('file.You can upload multiple image. Only .jpeg, .jpg, .png, .gif file can be uploaded. First image will be base image.')}}"></i>
+                                        <label>{{trans('file.Product Image')}}</label>
+                                        <i class="dripicons-question" data-toggle="tooltip" title="{{trans('file.You can upload multiple image. Only .jpeg, .jpg, .png, .gif file can be uploaded. First image will be base image.')}}"></i>
                                         <div id="imageUpload" class="dropzone"></div>
                                         <span class="validation-msg" id="image-error"></span>
                                     </div>
                                 </div>
+
+                                <!-- Product Details -->
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>{{trans('file.Product Details')}}</label>
                                         <textarea name="product_details" class="form-control" rows="3"></textarea>
                                     </div>
                                 </div>
+
+                                <!-- Variant Section -->
                                 <div class="col-md-12 mt-3" id="variant-option">
                                     <h5><input name="is_variant" type="checkbox" id="is-variant" value="1">&nbsp; {{trans('file.This product has variant')}}</h5>
                                 </div>
@@ -342,11 +364,12 @@
                                                     <th>{{trans('file.Additional Price')}}</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                            </tbody>
+                                            <tbody></tbody>
                                         </table>
                                     </div>
                                 </div>
+
+                                <!-- Different Warehouse Price -->
                                 <div class="col-md-12 mt-2" id="diffPrice-option">
                                     <h5><input name="is_diffPrice" type="checkbox" id="is-diffPrice" value="1">&nbsp; {{trans('file.This product has different price for different warehouse')}}</h5>
                                 </div>
@@ -368,17 +391,20 @@
                                                 </tr>
                                                 @endforeach
                                             </thead>
-                                            <tbody>
-                                            </tbody>
+                                            <tbody></tbody>
                                         </table>
                                     </div>
                                 </div>
+
+                                <!-- Batch & IMEI -->
                                 <div class="col-md-12 mt-3" id="batch-option">
                                     <h5><input name="is_batch" type="checkbox" id="is-batch" value="1">&nbsp; {{trans('file.This product has batch and expired date')}}</h5>
                                 </div>
                                 <div class="col-md-12 mt-3" id="imei-option">
                                     <h5><input name="is_imei" type="checkbox" id="is-imei" value="1">&nbsp; {{trans('file.This product has IMEI or Serial numbers')}}</h5>
                                 </div>
+
+                                <!-- Promotional Price -->
                                 <div class="col-md-12 mt-3">
                                     <h5><input name="promotion" type="checkbox" id="promotion" value="1">&nbsp; {{trans('file.Add Promotional Price')}}</h5>
                                 </div>
@@ -412,12 +438,16 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- WooCommerce Sync -->
                                 @if (\Schema::hasColumn('products', 'woocommerce_product_id'))
                                 <div class="col-md-12 mt-3">
                                     <h5><input name="is_sync_disable" type="checkbox" id="is_sync_disable" value="1">&nbsp; {{trans('file.Disable Woocommerce Sync')}}</h5>
                                 </div>
                                 @endif
                             </div>
+
+                            <!-- Submit Button -->
                             <div class="form-group mt-3">
                                 <input type="button" value="{{trans('file.submit')}}" id="submit-btn" class="btn btn-primary">
                             </div>
@@ -429,9 +459,278 @@
     </div>
 </section>
 
-
-@endsection
 @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const codeInput = document.getElementById('code');
+    const barcodeInput = document.getElementById('prodcut_barcode');
+    const genButton = document.getElementById('genbutton');
+
+    // Auto-fill barcode when code changes
+    codeInput.addEventListener('input', function () {
+        if (!barcodeInput.value) {
+            barcodeInput.value = codeInput.value;
+        }
+    });
+
+    // Generate random product code and barcode
+    genButton.addEventListener('click', function () {
+        const randomCode = 'P' + Math.floor(100000 + Math.random() * 900000);
+        codeInput.value = randomCode;
+        barcodeInput.value = randomCode;
+    });
+});
+</script>
+@endpush
+@endsection
+
+
+
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ===== EAN-13 Code Generator =====
+    function generateEAN13() {
+        let digits = '';
+        for(let i=0;i<12;i++) digits += Math.floor(Math.random()*10);
+        let sum = 0;
+        for(let i=0;i<12;i++) sum += (i%2===0?1:3)*parseInt(digits[i]);
+        let checksum = (10-(sum%10))%10;
+        return digits + checksum;
+    }
+
+    const codeInput = document.getElementById('code');
+    const barcodeInput = document.getElementById('prodcut_barcode');
+    const genButton = document.getElementById('genbutton');
+
+    // Auto-fill barcode when code changes
+    codeInput.addEventListener('input', function () {
+        if (!barcodeInput.value) {
+            barcodeInput.value = codeInput.value;
+        }
+    });
+
+    // Generate random EAN-13 code
+    genButton.addEventListener('click', function () {
+        const ean13 = generateEAN13();
+        codeInput.value = ean13;
+        barcodeInput.value = ean13;
+    });
+
+    // ===== Sidebar / Active Menu =====
+    $("ul#product").siblings('a').attr('aria-expanded','true');
+    $("ul#product").addClass("show");
+    $("ul#product #product-create-menu").addClass("active");
+
+    // ===== Package Product Limit Check =====
+    @if(config('database.connections.saleprosaas_landlord'))
+        let numberOfProduct = <?php echo json_encode($numberOfProduct)?>;
+        $.ajax({
+            type: 'GET',
+            async: false,
+            url: '{{route("package.fetchData", $general_setting->package_id)}}',
+            success: function(data) {
+                if(data['number_of_product'] > 0 && data['number_of_product'] <= numberOfProduct) {
+                    localStorage.setItem("message", "You don't have permission to create another product as you already exceed the limit! Subscribe to another package if you want more!");
+                    location.href = "{{route('products.index')}}";
+                }
+            }
+        });
+    @endif
+
+    // ===== Hide Sections =====
+    $("#digital, #combo, #variant-section, #initial-stock-section, #diffPrice-section, #promotion_price, #start_date, #last_date").hide();
+
+    // ===== Tooltip =====
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // ===== Ajax Setup =====
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // ===== Variants Logic =====
+    var variantPlaceholder = <?php echo json_encode(trans('file.Enter variant value seperated by comma')); ?>;
+    var variantIds = [], combinations = [], oldCombinations = [], oldAdditionalCost = [], oldAdditionalPrice = [], step, numberOfWarehouse = <?php echo json_encode(count($lims_warehouse_list)) ?>;
+
+    function updateVariants() {
+        first_variant_values = $('#'+variantIds[0]).val().split(',');
+        combinations = first_variant_values;
+        step = 1;
+        while(step < variantIds.length) {
+            let newCombinations = [];
+            for (let i = 0; i < combinations.length; i++) {
+                let new_variant_values = $('#'+variantIds[step]).val().split(',');
+                for (let j = 0; j < new_variant_values.length; j++) {
+                    newCombinations.push(combinations[i]+'/'+new_variant_values[j]);
+                }
+            }
+            combinations = newCombinations;
+            step++;
+        }
+
+        // Build variant table
+        let rownumber = $('table.variant-list tbody tr:last').index();
+        if(rownumber > -1) {
+            oldCombinations = [];
+            oldAdditionalCost = [];
+            oldAdditionalPrice = [];
+            $(".variant-name").each(function(i) {
+                oldCombinations.push($(this).text());
+                oldAdditionalCost.push($('table.variant-list tbody tr:nth-child(' + (i + 1) + ')').find('.additional-cost').val());
+                oldAdditionalPrice.push($('table.variant-list tbody tr:nth-child(' + (i + 1) + ')').find('.additional-price').val());
+            });
+        }
+
+        $("table.variant-list tbody").remove();
+        let newBody = $("<tbody>");
+        for(let i = 0; i < combinations.length; i++) {
+            let variant_name = combinations[i];
+            let item_code = variant_name + '-' + $("#code").val();
+            let newRow = $("<tr>");
+            let cols = '';
+            cols += '<td class="variant-name">'+variant_name+'<input type="hidden" name="variant_name[]" value="' + variant_name + '" /></td>';
+            cols += '<td><input type="text" class="form-control item-code" name="item_code[]" value="'+item_code+'" /></td>';
+            let oldIndex = oldCombinations.indexOf(combinations[i]);
+            if(oldIndex >= 0){
+                cols += '<td><input type="number" class="form-control additional-cost" name="additional_cost[]" value="'+oldAdditionalCost[oldIndex]+'" step="any" /></td>';
+                cols += '<td><input type="number" class="form-control additional-price" name="additional_price[]" value="'+oldAdditionalPrice[oldIndex]+'" step="any" /></td>';
+            } else {
+                cols += '<td><input type="number" class="form-control additional-cost" name="additional_cost[]" value="" step="any" /></td>';
+                cols += '<td><input type="number" class="form-control additional-price" name="additional_price[]" value="" step="any" /></td>';
+            }
+            newRow.append(cols);
+            newBody.append(newRow);
+        }
+        $("table.variant-list").append(newBody);
+    }
+
+    // ===== DiffPrice & Promotion Toggles =====
+    $("input[name='is_diffPrice']").on("change", function () {
+        $(this).is(':checked') ? $("#diffPrice-section").show(300) : $("#diffPrice-section").hide(300);
+    });
+
+    $("#promotion").on("change", function() {
+        if ($(this).is(':checked')) {
+            $("#starting_date").val($.datepicker.formatDate('dd-mm-yy', new Date()));
+            $("#promotion_price, #start_date, #last_date").show(300);
+        } else {
+            $("#promotion_price, #start_date, #last_date").hide(300);
+        }
+    });
+
+    // ===== Datepickers =====
+    $('#starting_date, #ending_date').datepicker({
+        format: "dd-mm-yyyy",
+        startDate: "<?php echo date('d-m-Y'); ?>",
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    // ===== Enter Key Navigation =====
+    $(window).keydown(function(e){
+        if(e.which == 13){
+            let $targ = $(e.target);
+            if(!$targ.is("textarea") && !$targ.is(":button,:submit")){
+                let focusNext = false;
+                $(this).find(":input:visible:not([disabled],[readonly]), a").each(function(){
+                    if(this === e.target){ focusNext = true; }
+                    else if(focusNext){ $(this).focus(); return false; }
+                });
+                return false;
+            }
+        }
+    });
+
+    // ===== Form Validation =====
+    function validate() {
+        let product_code = $("input[name='code']").val();
+        let barcode_symbology = $('select[name="barcode_symbology"]').val();
+        let exp = /^\d+$/;
+
+        if(!(product_code.match(exp)) && ['UPCA','UPCE','EAN8','EAN13'].includes(barcode_symbology)) {
+            alert('Product code must be numeric.');
+            return false;
+        } else if(product_code.match(exp)) {
+            if(barcode_symbology == 'UPCA' && product_code.length > 11){
+                alert('Product code length must be less than 12'); return false;
+            } else if(barcode_symbology == 'EAN8' && product_code.length > 7){
+                alert('Product code length must be less than 8'); return false;
+            } else if(barcode_symbology == 'EAN13' && product_code.length > 12){
+                alert('Product code length must be less than 13'); return false;
+            }
+        }
+
+        if($("#type").val() == 'combo' && $('table.order-list tbody tr:last').index() < 0){
+            alert("Please insert product to table!"); return false;
+        }
+
+        if($("#is-variant").is(":checked") && $("table#variant-table tbody tr:last").index() < 0){
+            alert('This product has variant. Please insert variant to table'); return false;
+        }
+
+        $("input[name='price']").prop('disabled',false);
+        return true;
+    }
+
+    // ===== Dropzone =====
+    Dropzone.autoDiscover = false;
+    let myDropzone = new Dropzone('div#imageUpload', {
+        addRemoveLinks:true,
+        autoProcessQueue:false,
+        uploadMultiple:true,
+        parallelUploads:100,
+        maxFilesize:12,
+        paramName:'image',
+        clickable:true,
+        method:'POST',
+        url:'{{route('products.store')}}',
+        headers:{'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')},
+        renameFile: function(file){ return new Date().getTime() + file.name; },
+        acceptedFiles: ".jpeg,.jpg,.png,.gif",
+        init: function() {
+            let dz = this;
+            $('#submit-btn').on("click", function(e){
+                e.preventDefault();
+                if($("#product-form").valid() && validate()){
+                    tinyMCE.triggerSave();
+                    if(dz.getAcceptedFiles().length) dz.processQueue();
+                    else {
+                        let formData = new FormData();
+                        $("#product-form").serializeArray().forEach(el => formData.append(el.name, el.value));
+                        let file = $('#file')[0].files;
+                        if(file.length>0) formData.append('file',file[0]);
+                        $.ajax({
+                            type:'POST', url:'{{route('products.store')}}',
+                            data: formData, contentType:false, processData:false,
+                            success:function(){ location.href='../products'; },
+                            error:function(resp){
+                                if(resp.responseJSON.errors.name) $("#name-error").text(resp.responseJSON.errors.name);
+                                else if(resp.responseJSON.errors.code) $("#code-error").text(resp.responseJSON.errors.code);
+                            }
+                        });
+                    }
+                }
+            });
+
+            dz.on('sending', function(file, xhr, formData){
+                $("#product-form").serializeArray().forEach(el => formData.append(el.name, el.value));
+                let fileInput = $('#file')[0].files;
+                if(fileInput.length>0) formData.append('file',fileInput[0]);
+            });
+        }
+    });
+
+});
+</script>
+@endpush
+
+
+<!-- @push('scripts')
 <script type="text/javascript">
 
     $("ul#product").siblings('a').attr('aria-expanded','true');
@@ -1396,5 +1695,7 @@
         }
     });
 
+    
+
 </script>
-@endpush
+@endpush -->

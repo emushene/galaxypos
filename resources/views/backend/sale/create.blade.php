@@ -702,7 +702,7 @@ $('select[name="customer_id"]').on('change', function() {
 
 $('select[name="warehouse_id"]').on('change', function() {
     var id = $(this).val();
-    $.get('getproduct/' + id, function(data) {
+    $.get('getproduct/' + id + '?without_stock=' + without_stock, function(data) {
         lims_product_array = [];
         product_code = data[0];
         product_name = data[1];
@@ -752,10 +752,14 @@ lims_productcodeSearch.autocomplete({
         }));
     },
     response: function(event, ui) {
-        if (ui.content.length == 1) {
+        if (ui.content.length == 1) { //This is for barcode scanner
             var data = ui.content[0].value;
-            $(this).autocomplete( "close" );
-            productSearch(data);
+            var code_from_autocomplete = data.substring(0, data.indexOf(' ('));
+            var current_input = $('#lims_productcodeSearch').val();
+            if(code_from_autocomplete === current_input) {
+                $(this).autocomplete( "close" );
+                productSearch(data);
+            }
         }
         else if(ui.content.length == 0 && $('#lims_productcodeSearch').val().length == 13) {
           productSearch($('#lims_productcodeSearch').val()+'|'+1);
@@ -1098,7 +1102,7 @@ function checkDiscount(qty, flag) {
 function checkQuantity(sale_qty, flag) {
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(2)').text();
     pos = product_code.indexOf(row_product_code);
-    if(without_stock == 'no') {
+    if(without_stock == 0) {
         if(product_type[pos] == 'standard'){
             var operator = unit_operator[rowindex].split(',');
             var operation_value = unit_operation_value[rowindex].split(',');
