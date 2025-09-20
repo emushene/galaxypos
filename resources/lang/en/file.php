@@ -1,5 +1,11 @@
 <?php
 return [
+	"Z Report" => "Z Report",
+	"Generate Z Report" => "Generate Z Report",
+	"Print Z Report" => "Print Z Report",
+	"Z Report List" => "Z Report List",
+	"This will generate an end-of-day report and close the accounting period since the last Z Report was generated for the selected warehouse." => "This will generate an end-of-day report and close the accounting period since the last Z Report was generated for the selected warehouse.",
+	"Are you sure you want to proceed?" => "Are you sure you want to proceed?",
 	'dashboard' => 'Dashboard',
 	'language' => 'Language',
 	'Languages' => 'Languages',

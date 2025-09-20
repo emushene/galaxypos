@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CashRegister;
 use App\Models\MoneyTransfer;
 use App\Models\Account;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Auth;
@@ -31,9 +33,57 @@ class MoneyTransferController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+
+        $request->validate([
+            'from_account_id' => 'required|integer|exists:accounts,id',
+            'to_account_id' => 'required|integer|exists:accounts,id|different:from_account_id',
+            'amount' => 'required|numeric|min:0.01',
+        ]);
+
         $data['reference_no'] = 'mtr-' . date("Ymd") . '-'. date("his");
-        MoneyTransfer::create($data);
-        return redirect()->back()->with('message', 'Money transfered successfully');
+        $data['user_id'] = Auth::id();
+
+        // If the transfer is from POS, associate it with the active cash register
+        if(isset($data['pos_transfer'])) {
+            $cash_register_data = CashRegister::where([
+                ['user_id', $data['user_id']],
+                ['warehouse_id', $data['warehouse_id']],
+                ['status', true]
+            ])->first();
+            if($cash_register_data) {
+                $data['cash_register_id'] = $cash_register_data->id;
+            }
+        }
+
+        $lims_from_account_data = Account::find($data['from_account_id']);
+        $lims_from_account_data->total_balance -= $data['amount'];
+        $lims_from_account_data->save();
+        DB::beginTransaction();
+        try {
+            $lims_from_account_data = Account::find($data['from_account_id']);
+            $lims_from_account_data->total_balance -= $data['amount'];
+            $lims_from_account_data->save();
+
+        $lims_to_account_data = Account::find($data['to_account_id']);
+        $lims_to_account_data->total_balance += $data['amount'];
+        $lims_to_account_data->save();
+            $lims_to_account_data = Account::find($data['to_account_id']);
+            $lims_to_account_data->total_balance += $data['amount'];
+            $lims_to_account_data->save();
+
+        try {
+            MoneyTransfer::create($data);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('not_permitted', 'Sorry! An error occurred while transferring money.');
+        }
+
+        if(isset($data['pos_transfer'])) {
+            return redirect()->route('sale.pos')->with('message', 'Money transferred successfully');
+        }
+
+        return redirect('money-transfers')->with('message', 'Money transfered successfully');
     }
 
     public function show(MoneyTransfer $moneyTransfer)

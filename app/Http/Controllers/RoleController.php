@@ -923,6 +923,17 @@ class RoleController extends Controller
         else
             $role->revokePermissionTo('supplier-due-report');
 
+        if($request->has('z-report')){
+            $permission = Permission::firstOrCreate(['name' => 'z-report']);
+            if(!$role->hasPermissionTo('z-report')){
+                $role->givePermissionTo($permission);
+            }
+        }
+        else {
+            if($role->hasPermissionTo('z-report'))
+                $role->revokePermissionTo('z-report');
+        }
+
         if($request->has('backup_database')){
             $permission = Permission::firstOrCreate(['name' => 'backup_database']);
             if(!$role->hasPermissionTo('backup_database')){

@@ -28,18 +28,16 @@ use App\Models\Variant;
 use App\Models\ProductVariant;
 use App\Models\Unit;
 use App\Models\CustomerGroup;
+use App\Models\CashRegister;
 use DB;
 use Auth;
 use Carbon\Carbon;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class ReportController extends Controller
 {
     public function productQuantityAlert()
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('product-qty-alert')){
+        if(Auth::user()->hasPermission('product-qty-alert')){
             $lims_product_data = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->get();
             return view('backend.report.qty_alert_report', compact('lims_product_data'));
         }
@@ -49,8 +47,7 @@ class ReportController extends Controller
 
     public function dailySaleObjective(Request $request)
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('dso-report')) {
+        if(Auth::user()->hasPermission('dso-report')) {
             if($request->input('starting_date')) {
                 $starting_date = $request->input('starting_date');
                 $ending_date = $request->input('ending_date');
@@ -148,8 +145,7 @@ class ReportController extends Controller
 
     public function warehouseStock(Request $request)
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('warehouse-stock-report')) {
+        if(Auth::user()->hasPermission('warehouse-stock-report')) {
             if(isset($request->warehouse_id))
                 $warehouse_id = $request->warehouse_id;
             else
@@ -202,8 +198,7 @@ class ReportController extends Controller
 
     public function dailySale($year, $month)
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('daily-sale')){
+        if(Auth::user()->hasPermission('daily-sale')){
             $start = 1;
             $number_of_day = date('t', mktime(0, 0, 0, $month, 1, $year));
             while($start <= $number_of_day)
@@ -285,8 +280,7 @@ class ReportController extends Controller
 
     public function dailyPurchase($year, $month)
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('daily-purchase')){
+        if(Auth::user()->hasPermission('daily-purchase')){
             $start = 1;
             $number_of_day = date('t', mktime(0, 0, 0, $month, 1, $year));
             while($start <= $number_of_day)
@@ -368,8 +362,7 @@ class ReportController extends Controller
 
     public function monthlySale($year)
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('monthly-sale')){
+        if(Auth::user()->hasPermission('monthly-sale')){
             $start = strtotime($year .'-01-01');
             $end = strtotime($year .'-12-31');
             while($start <= $end)
@@ -443,8 +436,7 @@ class ReportController extends Controller
 
     public function monthlyPurchase($year)
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('monthly-purchase')){
+        if(Auth::user()->hasPermission('monthly-purchase')){
             $start = strtotime($year .'-01-01');
             $end = strtotime($year .'-12-31');
             while($start <= $end)
@@ -516,8 +508,7 @@ class ReportController extends Controller
 
     public function bestSeller()
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('best-seller')){
+        if(Auth::user()->hasPermission('best-seller')){
             $start = strtotime(date("Y-m", strtotime("-2 months")).'-01');
             $end = strtotime(date("Y").'-'.date("m").'-31');
 
@@ -4335,7 +4326,7 @@ class ReportController extends Controller
             $limit = $request->input('length');
         else
             $limit = $totalData;
-        $start = $request->input('start_date');
+        $start = $request->input('start');
         $order = 'quotations.'.$columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
         $q = $q->select('quotations.id', 'quotations.reference_no', 'quotations.supplier_id', 'quotations.grand_total', 'quotations.quotation_status', 'quotations.created_at', 'customers.name as customer_name', 'warehouses.name as warehouse_name')
@@ -4558,5 +4549,93 @@ class ReportController extends Controller
             $q = $q->where('supplier_id', $request->supplier_id);
         $lims_purchase_data = $q->get();
         return view('backend.report.supplier_due_report', compact('lims_purchase_data', 'start_date', 'end_date'));
+    }
+
+    public function zReport(Request $request)
+    {
+        if(!Auth::user()->hasPermission('z-report')) {
+            return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
+        }
+
+        $warehouse_id = $request->input('warehouse_id');
+        $cash_register_id = $request->input('cash_register_id');
+        
+        $warehouses = Warehouse::where('is_active', true)->get();
+        $cash_registers = collect();
+
+        if ($warehouse_id) {
+            $cash_registers = CashRegister::with('user')
+                                ->where('warehouse_id', $warehouse_id)
+                                ->where('status', false) // Only closed registers
+                                ->orderBy('updated_at', 'desc')
+                                ->get();
+        }
+
+        $reportData = [
+            'warehouses' => $warehouses,
+            'cash_registers' => $cash_registers,
+            'warehouse_id' => $warehouse_id,
+            'cash_register_id' => $cash_register_id,
+        ];
+
+        if ($cash_register_id) {
+            $cash_register_data = CashRegister::with('user')->find($cash_register_id);
+
+            if ($cash_register_data) {
+                $start_date = $cash_register_data->created_at;
+                $end_date = $cash_register_data->updated_at;
+
+                $sales = Sale::where('cash_register_id', $cash_register_id)->where('sale_status', 1);
+                $total_sales = $sales->count();
+                $total_amount = $sales->sum('grand_total');
+
+                $returns = Returns::where('cash_register_id', $cash_register_id);
+                $total_returns = $returns->count();
+                $total_return_amount = $returns->sum('grand_total');
+
+                $payments = Payment::where('cash_register_id', $cash_register_id)->get();
+                $total_payments = $payments->sum('amount');
+                $cash_payment = $payments->where('paying_method', 'Cash')->sum('amount');
+                $card_payment = $payments->where('paying_method', 'Credit Card')->sum('amount');
+                $cheque_payment = $payments->where('paying_method', 'Cheque')->sum('amount');
+                $gift_card_payment = $payments->where('paying_method', 'Gift Card')->sum('amount');
+                $paypal_payment = $payments->where('paying_method', 'Paypal')->sum('amount');
+                $deposit_payment = $payments->where('paying_method', 'Deposit')->sum('amount');
+
+                $cash_in_hand = $cash_register_data->cash_in_hand;
+
+                $reportData = array_merge($reportData, [
+                    'total_sales' => $total_sales,
+                    'total_amount' => $total_amount,
+                    'total_returns' => $total_returns,
+                    'total_return_amount' => $total_return_amount,
+                    'total_payments' => $total_payments,
+                    'cash_payment' => $cash_payment,
+                    'card_payment' => $card_payment,
+                    'cheque_payment' => $cheque_payment,
+                    'gift_card_payment' => $gift_card_payment,
+                    'paypal_payment' => $paypal_payment,
+                    'deposit_payment' => $deposit_payment,
+                    'cash_in_hand' => $cash_in_hand,
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'cash_register_data' => $cash_register_data,
+                ]);
+            }
+        }
+
+        return view('backend.report.z_report', $reportData);
+    }
+
+    public function getCashRegisters($warehouse_id)
+    {
+        if ($warehouse_id == 0) {
+            return response()->json([]);
+        }
+        $general_setting = DB::table('general_settings')->latest()->first();
+        $cash_registers = CashRegister::with('user')->where('warehouse_id', $warehouse_id)->where('status', false)->orderBy('updated_at', 'desc')->get()->map(function($register) use ($general_setting) {
+            return ['id' => $register->id, 'text' => $register->user->name . ' (' . \Carbon\Carbon::parse($register->created_at)->format($general_setting->date_format . ' H:i') . ' - ' . \Carbon\Carbon::parse($register->updated_at)->format($general_setting->date_format . ' H:i') . ')'];
+        });
+        return response()->json($cash_registers);
     }
 }

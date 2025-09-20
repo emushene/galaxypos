@@ -79,7 +79,7 @@
 <div style="max-width:400px;margin:0 auto">
     @if(preg_match('~[0-9]~', url()->previous()))
         @php $url = '../../pos'; @endphp
-    @else
+    @else 
         @php $url = url()->previous(); @endphp
     @endif
     <div class="hidden-print">
@@ -87,6 +87,7 @@
             <tr>
                 <td><a href="{{$url}}" class="btn btn-info"><i class="fa fa-arrow-left"></i> {{trans('file.Back')}}</a> </td>
                 <td><button onclick="window.print();" class="btn btn-primary"><i class="dripicons-print"></i> {{trans('file.Print')}}</button></td>
+
             </tr>
         </table>
         <br>
@@ -327,12 +328,23 @@
 </div>
 
 <script type="text/javascript">
-    localStorage.clear();
+    var user_id = {{ $lims_sale_data->user_id }};
+    var keys = Object.keys(localStorage);
+    var prefix = user_id + '_';
+    for (var i = 0; i < keys.length; i++) {
+        if (keys[i].startsWith(prefix)) {
+            localStorage.removeItem(keys[i]);
+        }
+    }
+
     function auto_print() {
         window.print();
     }
-    setTimeout(auto_print, 1000);
+    function goBack() {
+        window.location.href = "{{$url}}";
+    }
+    setTimeout(auto_print, 1000); // Print after 1 second
+    setTimeout(goBack, 2000); // Go back to POS after 2 seconds (adjust as needed)
 </script>
-
 </body>
 </html>

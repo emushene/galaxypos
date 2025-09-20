@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CashRegister;
 use App\Models\Sale;
+use App\Models\Account;
 use App\Models\Payment;
 use App\Models\Returns;
+use App\Models\MoneyTransfer;
 use App\Models\Expense;
 use Auth;
 
@@ -66,7 +68,13 @@ class CashRegisterController extends Controller
 								])->sum('amount');
 		$data['total_sale_return'] = Returns::where('cash_register_id', $cash_register_data->id)->sum('grand_total');
 		$data['total_expense'] = Expense::where('cash_register_id', $cash_register_data->id)->sum('amount');
-		$data['total_cash'] = $data['cash_in_hand'] + $data['total_payment'] - ($data['total_sale_return'] + $data['total_expense']);
+
+		$default_account = Account::where('is_default', true)->first();
+        $data['total_cash_drop'] = MoneyTransfer::where('cash_register_id', $cash_register_data->id)
+                                        ->where('from_account_id', $default_account->id)
+                                        ->sum('amount');
+
+		$data['total_cash'] = $data['cash_in_hand'] + $data['total_payment'] - ($data['total_sale_return'] + $data['total_expense'] + $data['total_cash_drop']);
 		$data['status'] = $cash_register_data->status;
 		return $data;
 	}
@@ -111,7 +119,13 @@ class CashRegisterController extends Controller
 								])->sum('amount');
 		$data['total_sale_return'] = Returns::where('cash_register_id', $cash_register_data->id)->sum('grand_total');
 		$data['total_expense'] = Expense::where('cash_register_id', $cash_register_data->id)->sum('amount');
-		$data['total_cash'] = $data['cash_in_hand'] + $data['total_payment'] - ($data['total_sale_return'] + $data['total_expense']);
+
+		$default_account = Account::where('is_default', true)->first();
+        $data['total_cash_drop'] = MoneyTransfer::where('cash_register_id', $cash_register_data->id)
+                                        ->where('from_account_id', $default_account->id)
+                                        ->sum('amount');
+
+		$data['total_cash'] = $data['cash_in_hand'] + $data['total_payment'] - ($data['total_sale_return'] + $data['total_expense'] + $data['total_cash_drop']);
 		$data['id'] = $cash_register_data->id;
 		return $data;
 	}

@@ -311,6 +311,7 @@ Route::group(['middleware' => ['common', 'auth', 'active', ]], function() {
         Route::get('sales/today-sale', 'todaySale');
         Route::get('sales/today-profit/{warehouse_id}', 'todayProfit');
         Route::get('sales/check-discount', 'checkDiscount');
+        Route::post('sales/add-open-item', 'addOpenItem')->name('pos.addOpenItem');
     });
     Route::resource('sales', SaleController::class);
 
@@ -472,6 +473,8 @@ Route::group(['middleware' => ['common', 'auth', 'active', ]], function() {
             Route::post('customer-due-report-data', 'customerDueReportData');
             Route::post('supplier-due-report', 'supplierDueReportByDate')->name('report.supplierDueByDate');
             Route::post('supplier-due-report-data', 'supplierDueReportData');
+            Route::get('/report/get-cash-registers/{warehouse_id}', 'ReportController@getCashRegisters')->name('report.getCashRegisters');
+            Route::get('z-report', 'zReport')->name('report.zReport');
         });
     });
 

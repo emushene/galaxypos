@@ -268,11 +268,13 @@
                                     <div class="col-md-2">
                                         <div class="form-group">
                                             <input type="hidden" name="total_discount" value="{{number_format(0, $general_setting->decimal, '.', '')}}" />
+                                            <input type="hidden" name="total_discount" value="{{number_format(0, 2, '.', '')}}" />
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
                                             <input type="hidden" name="total_tax" value="{{number_format(0, $general_setting->decimal, '.', '')}}"/>
+                                            <input type="hidden" name="total_tax" value="{{number_format(0, 2, '.', '')}}"/>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -308,18 +310,23 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <span class="totals-title">{{trans('file.Total')}}</span><span id="subtotal">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            <span class="totals-title">{{trans('file.Total')}}</span><span id="subtotal">{{number_format(0, 2, '.', '')}}</span>
                                         </div>
                                         <div class="col-sm-4">
                                             <span class="totals-title">{{trans('file.Discount')}} <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#order-discount-modal"> <i class="dripicons-document-edit"></i></button></span><span id="discount">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            <span class="totals-title">{{trans('file.Discount')}} <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#order-discount-modal"> <i class="dripicons-document-edit"></i></button></span><span id="discount">{{number_format(0, 2, '.', '')}}</span>
                                         </div>
                                         <div class="col-sm-4">
                                             <span class="totals-title">{{trans('file.Coupon')}} <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#coupon-modal"><i class="dripicons-document-edit"></i></button></span><span id="coupon-text">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            <span class="totals-title">{{trans('file.Coupon')}} <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#coupon-modal"><i class="dripicons-document-edit"></i></button></span><span id="coupon-text">{{number_format(0, 2, '.', '')}}</span>
                                         </div>
                                         <div class="col-sm-4">
                                             <span class="totals-title">{{trans('file.Tax')}} <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#order-tax"><i class="dripicons-document-edit"></i></button></span><span id="tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            <span class="totals-title">{{trans('file.Tax')}} <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#order-tax"><i class="dripicons-document-edit"></i></button></span><span id="tax">{{number_format(0, 2, '.', '')}}</span>
                                         </div>
                                         <div class="col-sm-4">
                                             <span class="totals-title">{{trans('file.Shipping')}} <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#shipping-cost-modal"><i class="dripicons-document-edit"></i></button></span><span id="shipping-cost">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            <span class="totals-title">{{trans('file.Shipping')}} <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#shipping-cost-modal"><i class="dripicons-document-edit"></i></button></span><span id="shipping-cost">{{number_format(0, 2, '.', '')}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -328,6 +335,7 @@
                     </div>
                     <div class="payment-amount">
                         <h2>{{trans('file.grand total')}} <span id="grand-total">{{number_format(0, $general_setting->decimal, '.', '')}}</span></h2>
+                        <h2>{{trans('file.grand total')}} <span id="grand-total">{{number_format(0, 2, '.', '')}}</span></h2>
                     </div>
                     <div class="payment-options">
                         <!-- new Added -->
@@ -383,6 +391,12 @@
                                 <i class="fa fa-bars"></i> MENU
                             </button>
                         </div>
+                         <!-- Open Item Button -->
+                         <div class="column-5">
+                            <button type="button" class="btn btn-sm btn-custom" 
+                                    style="background-color: #27ae60;" 
+                                    data-toggle="modal" data-target="#openItemModal"><i class="fa fa-plus"></i> Open Item</button>
+                        </div>
                         <!-- END MENU Button -->
                         @if(in_array("pos_void", $all_permission))
                         <div class="column-5">
@@ -421,6 +435,7 @@
                                         <div class="col-md-3 mt-1">
                                             <label>{{trans('file.Due')}} : </label>
                                             <p id="change_0" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, $general_setting->decimal, '.', '')}}</p>
+                                            <p id="change_0" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, 2, '.', '')}}</p>
                                         </div>
                                         <div class="col-md-3 mt-1">
                                             <input type="hidden" name="paid_by_id_0">
@@ -462,6 +477,7 @@
                                         <div class="col-md-3 mt-1">
                                             <label>{{trans('file.Due')}} : </label>
                                             <p id="change_1" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, $general_setting->decimal, '.', '')}}</p>
+                                            <p id="change_1" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, 2, '.', '')}}</p>
                                         </div>
                                         <div class="col-md-3 mt-1">
                                             <input type="hidden" name="paid_by_id_1">
@@ -503,6 +519,7 @@
                                         <div class="col-md-3 mt-1">
                                             <label>{{trans('file.Due')}} : </label>
                                             <p id="change_2" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, $general_setting->decimal, '.', '')}}</p>
+                                            <p id="change_2" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, 2, '.', '')}}</p>
                                         </div>
                                         <div class="col-md-3 mt-1">
                                             <input type="hidden" name="paid_by_id_2">
@@ -544,6 +561,7 @@
                                         <div class="col-md-3 mt-1">
                                             <label>{{trans('file.Due')}} : </label>
                                             <p id="change_3" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, $general_setting->decimal, '.', '')}}</p>
+                                            <p id="change_3" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, 2, '.', '')}}</p>
                                         </div>
                                         <div class="col-md-3 mt-1">
                                             <input type="hidden" name="paid_by_id_3">
@@ -636,6 +654,7 @@
                                         <div class="col-md-3 mt-1">
                                             <label>{{trans('file.Due')}} : </label>
                                             <p id="change" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, $general_setting->decimal, '.', '')}}</p>
+                                            <p id="change" class="ml-2" style="font-size: 20px; font-weight: bolder;">{{number_format(0, 2, '.', '')}}</p>
                                         </div>
                                         <!-- <div class="col-md-3 mt-1"> <label>{{trans('file.Change')}} : </label> <p id="due" class="ml-2">{{number_format(0, $general_setting->decimal, '.', '')}}</p> </div> -->
                                         <div class="col-md-3 mt-1">
@@ -1414,6 +1433,10 @@
                                           <td id="total_sale_return" class="text-right"></td>
                                         </tr>
                                         <tr>
+                                          <td>{{trans('file.Money Transfer')}}:</td>
+                                          <td id="total_cash_drop" class="text-right"></td>
+                                        </tr>
+                                        <tr>
                                           <td>{{trans('file.Total Expense')}}:</td>
                                           <td id="total_expense" class="text-right"></td>
                                         </tr>
@@ -1434,6 +1457,57 @@
                         </div>
                     </div>
                   </div>
+                </div>
+            </div>
+            <!-- cash drop modal -->
+            <div id="cash-drop-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
+                <div role="document" class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 id="exampleModalLabel" class="modal-title">{{trans('file.Money Transfer')}}</h5>
+                            <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
+                            {!! Form::open(['route' => 'money-transfers.store', 'method' => 'post']) !!}
+                            <input type="hidden" name="pos_transfer" value="1">
+                            <input type="hidden" name="warehouse_id" value="">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label>{{trans('file.From Account')}} *</label>
+                                    <select name="from_account_id" class="form-control selectpicker" required data-live-search="true" data-live-search-style="begins" title="Select from account...">
+                                        @foreach($lims_account_list as $account)
+                                            @if($account->is_default)
+                                            <option selected value="{{$account->id}}">{{$account->name}} [{{$account->account_no}}]</option>
+                                            @else
+                                            <option value="{{$account->id}}">{{$account->name}} [{{$account->account_no}}]</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label>{{trans('file.To Account')}} *</label>
+                                    <select name="to_account_id" class="form-control selectpicker" required data-live-search="true" data-live-search-style="begins" title="Select to account...">
+                                        @foreach($lims_account_list as $account)
+                                            @if($account->name == 'Main Safe')
+                                            <option selected value="{{$account->id}}">{{$account->name}} [{{$account->account_no}}]</option>
+                                            @else
+                                            <option value="{{$account->id}}">{{$account->name}} [{{$account->account_no}}]</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label>{{trans('file.Amount')}} *</label>
+                                    <input type="number" name="amount" class="form-control" required step="any">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">{{trans('file.submit')}}</button>
+                            </div>
+                            {{ Form::close() }}
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- today sale modal -->
@@ -1487,6 +1561,10 @@
                                         <tr>
                                           <td>{{trans('file.Total Sale Return')}}:</td>
                                           <td class="total_sale_return text-right"></td>
+                                        </tr>
+                                        <tr>
+                                          <td>{{trans('file.Money Transfer')}}:</td>
+                                          <td class="total_cash_drop text-right"></td>
                                         </tr>
                                         <tr>
                                           <td>{{trans('file.Total Expense')}}:</td>
@@ -1588,8 +1666,8 @@
   </a>
 </div>
 <div class="col-6 mb-3">
-  <a class="btn btn-outline-primary w-100" href="#" id="menu-cashup-btn">
-    <i class="fa fa-arrow-up"></i><br>Cash Drop
+  <a class="btn btn-outline-primary w-100" href="#" id="cash-drop-btn" data-toggle="modal" data-target="#cash-drop-modal">
+    <i class="fa fa-arrow-down"></i><br>Cash Drop
   </a>
 </div>
 <div class="col-6 mb-3">
@@ -1598,8 +1676,8 @@
   </a>
 </div>
 <div class="col-6 mb-3">
-  <a class="btn btn-outline-primary w-100" href="#" id="menu-cashup-btn">
-    <i class="fa fa-arrow-up"></i><br>Print Z Report
+  <a class="btn btn-outline-primary w-100" href="{{ route('report.zReport') }}" id="menu-z-report-btn">
+    <i class="fa fa-print"></i><br>{{trans('file.Print Z Report')}}
   </a>
 </div>
             <div class="col-6 mb-3">
@@ -1619,6 +1697,50 @@
   </div>
 </div>
 <!-- END MENU Modal -->
+<!-- Open Item Modal -->
+<div class="modal fade" id="openItemModal" tabindex="-1" role="dialog" aria-labelledby="openItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="openItemModalLabel">Add Open Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="openItemForm">
+                    <div class="form-group">
+                        <label for="open_item_id">Item *</label>
+                        <select name="open_item_id" id="open_item_id" class="form-control selectpicker" data-live-search="true" title="Select Open Item..." required>
+                            @foreach($lims_open_items_list as $item)
+                            <option value="{{$item->id}}">{{$item->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemPrice">Price *</label>
+                        <input type="number" class="form-control" id="itemPrice" name="price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDescription">Custom Description (Optional)</label>
+                        <input type="text" class="form-control" id="itemDescription" name="description">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="addOpenItemBtn">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
 
 
 @endsection
@@ -1626,6 +1748,8 @@
 
 @push('scripts')
 <script type="text/javascript">
+
+    var user_id = {{ Auth::id() }};
 
     $("ul#sale").siblings('a').attr('aria-expanded','true');
     $("ul#sale").addClass("show");
@@ -1819,21 +1943,21 @@ $("#order-tax-rate-select").val(getSavedValue("order-tax-rate-select"));
 
 $("#shipping-cost-val").val(getSavedValue("shipping-cost-val"));
 
-if(localStorage.getItem("tbody-id")) {
-  $("#tbody-id").html(localStorage.getItem("tbody-id"));
+if(localStorage.getItem(user_id + "_tbody-id")) {
+  $("#tbody-id").html(localStorage.getItem(user_id + "_tbody-id"));
 }
 
 function saveValue(e) {
     var id = e.id;  // get the sender's id to save it.
     var val = e.value; // get the value.
-    localStorage.setItem(id, val);// Every time user writing something, the localStorage's value will override.
+    localStorage.setItem(user_id + '_' + id, val);// Every time user writing something, the localStorage's value will override.
 }
 //get the saved value function - return the value of "v" from localStorage.
 function getSavedValue  (v) {
-    if (!localStorage.getItem(v)) {
+    if (!localStorage.getItem(user_id + '_' + v)) {
         return "";// You can change this to your defualt value.
     }
-    return localStorage.getItem(v);
+    return localStorage.getItem(user_id + '_' + v);
 }
 
 if(getSavedValue("localStorageQty")) {
@@ -2027,6 +2151,7 @@ $('.customer-submit-btn').on("click", function() {
               $('#register-details-modal #paypal_payment').text(data['paypal_payment']);
               $('#register-details-modal #total_sale_return').text(data['total_sale_return']);
               $('#register-details-modal #total_expense').text(data['total_expense']);
+              $('#register-details-modal #total_cash_drop').text(data['total_cash_drop']);
               $('#register-details-modal #total_cash').text(data['total_cash']);
               $('#register-details-modal input[name=cash_register_id]').val(data['id']);
           }
@@ -2054,6 +2179,7 @@ $("#menu-cashup-btn").on("click", function (e) {
             $('#register-details-modal #paypal_payment').text(data['paypal_payment']);
             $('#register-details-modal #total_sale_return').text(data['total_sale_return']);
             $('#register-details-modal #total_expense').text(data['total_expense']);
+            $('#register-details-modal #total_cash_drop').text(data['total_cash_drop']);
             $('#register-details-modal #total_cash').text(data['total_cash']);
             $('#register-details-modal input[name=cash_register_id]').val(data['id']);
         }
@@ -2066,6 +2192,11 @@ $("#menu-add-customer-btn").on("click", function (e) {
     e.preventDefault();
     $('#menuModal').modal('hide');
     $('#addCustomer').modal('show');
+});
+
+$("#cash-drop-btn").on("click", function (e) {
+    e.preventDefault();
+    $('#cash-drop-modal input[name="warehouse_id"]').val( $('select[name="warehouse_id"]').val() );
 });
 
 //Today Sale Button
@@ -2085,6 +2216,7 @@ $("#menu-add-customer-btn").on("click", function (e) {
               $('#today-sale-modal .deposit_payment').text(data['deposit_payment']);
               $('#today-sale-modal .paypal_payment').text(data['paypal_payment']);
               $('#today-sale-modal .total_sale_return').text(data['total_sale_return']);
+              $('#today-sale-modal .total_cash_drop').text(data['total_cash_drop']);
               $('#today-sale-modal .total_expense').text(data['total_expense']);
               $('#today-sale-modal .total_cash').text(data['total_cash']);
           }
@@ -2604,11 +2736,11 @@ $('button[name="update_btn"]').on("click", function() {
         unit_operator[rowindex] = localStorageSaleUnitOperator[rowindex] = temp_unit_operator.toString() + ',';
         unit_operation_value[rowindex] = localStorageSaleUnitOperationValue[rowindex] = temp_unit_operation_value.toString() + ',';
 
-        localStorage.setItem("localStorageTaxRate", localStorageTaxRate);
-        localStorage.setItem("localStorageTaxName", localStorageTaxName);
-        localStorage.setItem("localStorageTempUnitName", localStorageTempUnitName);
-        localStorage.setItem("localStorageSaleUnitOperator", localStorageSaleUnitOperator);
-        localStorage.setItem("localStorageSaleUnitOperationValue", localStorageSaleUnitOperationValue);
+        localStorage.setItem(user_id + "_localStorageTaxRate", localStorageTaxRate);
+        localStorage.setItem(user_id + "_localStorageTaxName", localStorageTaxName);
+        localStorage.setItem(user_id + "_localStorageTempUnitName", localStorageTempUnitName);
+        localStorage.setItem(user_id + "_localStorageSaleUnitOperator", localStorageSaleUnitOperator);
+        localStorage.setItem(user_id + "_localStorageSaleUnitOperationValue", localStorageSaleUnitOperationValue);
     }
     else {
         product_price[rowindex] = $('input[name="edit_unit_price"]').val();
@@ -3062,35 +3194,43 @@ $(document).on('click', '.qc-btn', function(e) {
     if($(this).data('amount')) {
         if($('.qc').data('initial')) {
             $('input[name="paying_amount"]').val( $(this).data('amount').toFixed({{$general_setting->decimal}}) );
+            $('input[name="paying_amount"]').val( $(this).data('amount').toFixed(2) );
             $('.qc').data('initial', 0);
         }
         else {
             $('input[name="paying_amount"]').val( (parseFloat($('input[name="paying_amount"]').val()) + $(this).data('amount')).toFixed({{$general_setting->decimal}}) );
+            $('input[name="paying_amount"]').val( (parseFloat($('input[name="paying_amount"]').val()) + $(this).data('amount')).toFixed(2) );
         }
     }
     else
         $('input[name="paying_amount"]').val('{{number_format(0, $general_setting->decimal, '.', '')}}');
+        $('input[name="paying_amount"]').val('{{number_format(0, 2, '.', '')}}');
     change( $('input[name="paying_amount"]').val(), $('input[name="paid_amount"]').val() );
 });
 
 function change(paying_amount, paid_amount) {
     $("#change").text( parseFloat(paying_amount - paid_amount).toFixed({{$general_setting->decimal}}) );
+    $("#change").text( parseFloat(paying_amount - paid_amount).toFixed(2) );
 }
 
 function change0(paying_amount, paid_amount) {
     $("#change_0").text( parseFloat(paying_amount - paid_amount).toFixed({{$general_setting->decimal}}) );
+    $("#change_0").text( parseFloat(paying_amount - paid_amount).toFixed(2) );
 }
 
 function change1(paying_amount, paid_amount) {
     $("#change_1").text( parseFloat(paying_amount - paid_amount).toFixed({{$general_setting->decimal}}) );
+    $("#change_1").text( parseFloat(paying_amount - paid_amount).toFixed(2) );
 }
 
 function change2(paying_amount, paid_amount) {
     $("#change_2").text( parseFloat(paying_amount - paid_amount).toFixed({{$general_setting->decimal}}) );
+    $("#change_2").text( parseFloat(paying_amount - paid_amount).toFixed(2) );
 }
 
 function change3(paying_amount, paid_amount) {
     $("#change_3").text( parseFloat(paying_amount - paid_amount).toFixed({{$general_setting->decimal}}) );
+    $("#change_3").text( parseFloat(paying_amount - paid_amount).toFixed(2) );
 }
 
 function confirmDelete() {
@@ -3100,7 +3240,7 @@ function confirmDelete() {
     return false;
 }
 
-function productSearch(data) {
+function productSearch(data, is_open_item = false) {
     var product_info = data.split(" ");
     var product_code = product_info[0];
     var pre_qty = 0;
@@ -3140,13 +3280,13 @@ function productSearch(data) {
             }
             $("input[name='product_code_name']").val('');
             if(flag){
-                addNewProduct(data);
+                addNewProduct(data, is_open_item);
             }
         }
     });
 }
 
-function addNewProduct(data){
+function addNewProduct(data, is_open_item = false){
     var newRow = $("<tr>");
     var cols = '';
     temp_unit_name = (data[6]).split(',');
@@ -3198,13 +3338,17 @@ function addNewProduct(data){
 
     rowindex = newRow.index();
 
-    if(!data[11] && product_warehouse_price[pos]) {
+    if(is_open_item) {
+        product_price.splice(rowindex, 0, parseFloat(data[2]));
+    }
+    else if(!data[11] && product_warehouse_price[pos]) {
         product_price.splice(rowindex, 0, parseFloat(product_warehouse_price[pos] * currency['exchange_rate']) + parseFloat(product_warehouse_price[pos] * currency['exchange_rate'] * customer_group_rate));
     }
     else {
         product_price.splice(rowindex, 0, parseFloat(data[2] * currency['exchange_rate']) + parseFloat(data[2] * currency['exchange_rate'] * customer_group_rate));
     }
     product_discount.splice(rowindex, 0, '{{number_format(0, $general_setting->decimal, '.', '')}}');
+    product_discount.splice(rowindex, 0, '{{number_format(0, 2, '.', '')}}');
     tax_rate.splice(rowindex, 0, parseFloat(data[3]));
     tax_name.splice(rowindex, 0, data[4]);
     tax_method.splice(rowindex, 0, data[5]);
@@ -3220,6 +3364,7 @@ function addNewProduct(data){
     localStorageSaleUnit.splice(rowindex, 0, temp_unit_name[0]);
     localStorageProductDiscount.splice(rowindex, 0, product_discount[rowindex]);
     localStorageTaxRate.splice(rowindex, 0, tax_rate[rowindex].toFixed({{$general_setting->decimal}}));
+    localStorageTaxRate.splice(rowindex, 0, tax_rate[rowindex].toFixed(2));
     localStorageTaxName.splice(rowindex, 0, data[4]);
     localStorageTaxMethod.splice(rowindex, 0, data[5]);
     localStorageTempUnitName.splice(rowindex, 0, data[6]);
@@ -3230,6 +3375,10 @@ function addNewProduct(data){
     localStorageTaxValue.splice(rowindex, 0, '{{number_format(0, $general_setting->decimal, '.', '')}}');
     localStorageSubTotalUnit.splice(rowindex, 0, '{{number_format(0, $general_setting->decimal, '.', '')}}');
     localStorageSubTotal.splice(rowindex, 0, '{{number_format(0, $general_setting->decimal, '.', '')}}');
+    localStorageNetUnitPrice.splice(rowindex, 0, '{{number_format(0, 2, '.', '')}}');
+    localStorageTaxValue.splice(rowindex, 0, '{{number_format(0, 2, '.', '')}}');
+    localStorageSubTotalUnit.splice(rowindex, 0, '{{number_format(0, 2, '.', '')}}');
+    localStorageSubTotal.splice(rowindex, 0, '{{number_format(0, 2, '.', '')}}');
 
     localStorage.setItem("localStorageProductId", localStorageProductId);
     localStorage.setItem("localStorageSaleUnit", localStorageSaleUnit);
@@ -3293,6 +3442,7 @@ function edit(){
     $('input[name="edit_qty"]').val(qty);
 
     $('input[name="edit_discount"]').val(parseFloat(product_discount[rowindex]).toFixed({{$general_setting->decimal}}));
+    $('input[name="edit_discount"]').val(parseFloat(product_discount[rowindex]).toFixed(2));
 
     var tax_name_all = <?php echo json_encode($tax_name_all) ?>;
     pos = tax_name_all.indexOf(tax_name[rowindex]);
@@ -3319,6 +3469,7 @@ function edit(){
         $("#edit_unit").hide();
     }
     $('input[name="edit_unit_price"]').val(row_product_price.toFixed({{$general_setting->decimal}}));
+    $('input[name="edit_unit_price"]').val(row_product_price.toFixed(2));
     $('.selectpicker').selectpicker('refresh');
 }
 
@@ -3341,6 +3492,7 @@ function couponDiscount() {
                     if(parseFloat($('input[name="grand_total"]').val()) >= value['minimum_amount']) {
                         $('input[name="grand_total"]').val($('input[name="grand_total"]').val() - (value['amount'] * currency['exchange_rate']));
                         $('#grand-total').text(parseFloat($('input[name="grand_total"]').val()).toFixed({{$general_setting->decimal}}));
+                        $('#grand-total').text(parseFloat($('input[name="grand_total"]').val()).toFixed(2));
                         if(!$('input[name="coupon_active"]').val())
                             alert('Congratulation! You got '+(value['amount'] * currency['exchange_rate'])+' '+currency['code']+' discount');
                         $(".coupon-check").prop("disabled",true);
@@ -3350,6 +3502,7 @@ function couponDiscount() {
                         $('input[name="coupon_id"]').val(value['id']);
                         $('input[name="coupon_discount"]').val(value['amount'] * currency['exchange_rate']);
                         $('#coupon-text').text(parseFloat(value['amount'] * currency['exchange_rate']).toFixed({{$general_setting->decimal}}));
+                        $('#coupon-text').text(parseFloat(value['amount'] * currency['exchange_rate']).toFixed(2));
                     }
                     else
                         alert('Grand Total is not sufficient for discount! Required '+value['minimum_amount']+' '+currency['code']);
@@ -3360,6 +3513,7 @@ function couponDiscount() {
                     grand_total = grand_total - coupon_discount;
                     $('input[name="grand_total"]').val(grand_total);
                     $('#grand-total').text(parseFloat(grand_total).toFixed({{$general_setting->decimal}}));
+                    $('#grand-total').text(parseFloat(grand_total).toFixed(2));
                     if(!$('input[name="coupon_active"]').val())
                             alert('Congratulation! You got '+value['amount']+'% discount');
                     $(".coupon-check").prop("disabled",true);
@@ -3369,6 +3523,7 @@ function couponDiscount() {
                     $('input[name="coupon_id"]').val(value['id']);
                     $('input[name="coupon_discount"]').val(coupon_discount);
                     $('#coupon-text').text(parseFloat(coupon_discount).toFixed({{$general_setting->decimal}}));
+                    $('#coupon-text').text(parseFloat(coupon_discount).toFixed(2));
                 }
             }
         });
@@ -3394,15 +3549,15 @@ function checkDiscount(qty, flag) {
     }
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(qty);
     checkQuantity(String(qty), flag);
-    localStorage.setItem("tbody-id", $("table.order-list tbody").html());
+    localStorage.setItem(user_id + "_tbody-id", $("table.order-list tbody").html());
 }
 
 function checkQuantity(sale_qty, flag) {
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-code').val();
     pos = product_code.indexOf(row_product_code);
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.in-stock').text(product_qty[pos]);
-    localStorageQty[rowindex] = sale_qty;
-    localStorage.setItem("localStorageQty", localStorageQty);
+    localStorageQty[rowindex] = sale_qty;    
+    localStorage.setItem(user_id + "_localStorageQty", localStorageQty);
     if(without_stock == 0) {
         if(product_type[pos] == 'standard') {
             var operator = unit_operator[rowindex].split(',');
@@ -3498,6 +3653,13 @@ function calculateRowProductData(quantity) {
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-price').text(sub_total_unit.toFixed({{$general_setting->decimal}}));
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed({{$general_setting->decimal}}));
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val(sub_total.toFixed({{$general_setting->decimal}}));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.discount-value').val((product_discount[rowindex] * quantity).toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val(tax_rate[rowindex].toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').val(net_unit_price.toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-price').text(sub_total_unit.toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val(sub_total.toFixed(2));
 
     localStorageProductDiscount.splice(rowindex, 1, (product_discount[rowindex] * quantity).toFixed({{$general_setting->decimal}}));
     localStorageTaxRate.splice(rowindex, 1, tax_rate[rowindex].toFixed({{$general_setting->decimal}}));
@@ -3505,12 +3667,18 @@ function calculateRowProductData(quantity) {
     localStorageTaxValue.splice(rowindex, 1, tax.toFixed({{$general_setting->decimal}}));
     localStorageSubTotalUnit.splice(rowindex, 1, sub_total_unit.toFixed({{$general_setting->decimal}}));
     localStorageSubTotal.splice(rowindex, 1, sub_total.toFixed({{$general_setting->decimal}}));
-    localStorage.setItem("localStorageProductDiscount", localStorageProductDiscount);
-    localStorage.setItem("localStorageTaxRate", localStorageTaxRate);
-    localStorage.setItem("localStorageNetUnitPrice", localStorageNetUnitPrice);
-    localStorage.setItem("localStorageTaxValue", localStorageTaxValue);
-    localStorage.setItem("localStorageSubTotalUnit", localStorageSubTotalUnit);
-    localStorage.setItem("localStorageSubTotal", localStorageSubTotal);
+    localStorageProductDiscount.splice(rowindex, 1, (product_discount[rowindex] * quantity).toFixed(2));
+    localStorageTaxRate.splice(rowindex, 1, tax_rate[rowindex].toFixed(2));
+    localStorageNetUnitPrice.splice(rowindex, 1, net_unit_price.toFixed(2));
+    localStorageTaxValue.splice(rowindex, 1, tax.toFixed(2));
+    localStorageSubTotalUnit.splice(rowindex, 1, sub_total_unit.toFixed(2));
+    localStorageSubTotal.splice(rowindex, 1, sub_total.toFixed(2));
+    localStorage.setItem(user_id + "_localStorageProductDiscount", localStorageProductDiscount);
+    localStorage.setItem(user_id + "_localStorageTaxRate", localStorageTaxRate);
+    localStorage.setItem(user_id + "_localStorageNetUnitPrice", localStorageNetUnitPrice);
+    localStorage.setItem(user_id + "_localStorageTaxValue", localStorageTaxValue);
+    localStorage.setItem(user_id + "_localStorageSubTotalUnit", localStorageSubTotalUnit);
+    localStorage.setItem(user_id + "_localStorageSubTotal", localStorageSubTotal);
 
     calculateTotal();
 }
@@ -3534,6 +3702,7 @@ function calculateTotal() {
     });
 
     $('input[name="total_discount"]').val(total_discount.toFixed({{$general_setting->decimal}}));
+    $('input[name="total_discount"]').val(total_discount.toFixed(2));
 
     //Sum of tax
     var total_tax = 0;
@@ -3542,6 +3711,7 @@ function calculateTotal() {
     });
 
     $('input[name="total_tax"]').val(total_tax.toFixed({{$general_setting->decimal}}));
+    $('input[name="total_tax"]').val(total_tax.toFixed(2));
 
     //Sum of subtotal
     var total = 0;
@@ -3549,6 +3719,7 @@ function calculateTotal() {
         total += parseFloat($(this).text());
     });
     $('input[name="total_price"]').val(total.toFixed({{$general_setting->decimal}}));
+    $('input[name="total_price"]').val(total.toFixed(2));
 
     calculateGrandTotal();
 }
@@ -3564,6 +3735,7 @@ function calculateGrandTotal() {
 
     if (!order_discount_value){
         order_discount_value = {{number_format(0, $general_setting->decimal, '.', '')}};
+        order_discount_value = {{number_format(0, 2, '.', '')}};
     }
 
     if(order_discount_type == 'Flat') {
@@ -3808,5 +3980,46 @@ $('#product-table').DataTable({
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
+<script>
+    $(document).ready(function() {
+        $('#addOpenItemBtn').click(function() {
+            $('#addOpenItemBtn').prop('disabled', true);
+            var product_id = $('#open_item_id').val();
+            var description = $('#itemDescription').val(); // Optional description
+            var price = $('#itemPrice').val();
+
+            if(!product_id || !price || parseFloat(price) < 0) {
+                alert('Please select an item and enter a valid non-negative price.');
+                $('#addOpenItemBtn').prop('disabled', false);
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('pos.addOpenItem') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    product_id: product_id,
+                    description: description.trim(),
+                    price: parseFloat(price)
+                },
+                success: function(data) {
+                    addNewProduct(data, true);
+                    $('#openItemModal').modal('hide');
+                    $('#openItemForm')[0].reset();
+                    $('#open_item_id').val('').selectpicker('refresh');
+                    $('#addOpenItemBtn').prop('disabled', false);
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors (e.g., display an error message)
+                    console.error(error);
+                    alert('Error adding open item. ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Please try again.'));
+                    $('#addOpenItemBtn').prop('disabled', false);
+                }
+            });
+        });
+    });
+</script>
 
 @endpush

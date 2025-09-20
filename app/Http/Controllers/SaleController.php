@@ -400,6 +400,58 @@ class SaleController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
+    public function addOpenItem(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'description' => 'nullable|string|max:191',
+            'price' => 'required|numeric|min:0'
+        ]);
+
+        $lims_product_data = Product::find($request->product_id);
+
+        if (!$lims_product_data) {
+            // This should be caught by validation, but as a fallback
+            return response()->json(['error' => 'Open Item product not found.'], 404);
+        }
+
+        $product_variant_id = null;
+
+        // Use custom description if provided, otherwise use product name
+        $product_name = $request->description ?: $lims_product_data->name;
+
+        // 0: name - Overridden by user input
+        $product[] = $product_name;
+        // 1: code
+        $product[] = $lims_product_data->code;
+        // 2: price - Overridden by user input
+        $product[] = $request->price;
+
+        if ($lims_product_data->tax_id) {
+            $lims_tax_data = Tax::find($lims_product_data->tax_id);
+            $product[] = $lims_tax_data->rate; // 3: tax_rate
+            $product[] = $lims_tax_data->name; // 4: tax_name
+        } else {
+            $product[] = 0;
+            $product[] = 'No Tax';
+        }
+        $product[] = $lims_product_data->tax_method; // 5: tax_method
+
+        // Since it's a service/open item, unit logic is simplified.
+        $product[] = 'n/a' . ','; // 6
+        $product[] = 'n/a' . ','; // 7
+        $product[] = 'n/a' . ','; // 8
+
+        $product[] = $lims_product_data->id; // 9
+        $product[] = $product_variant_id; // 10
+        $product[] = $lims_product_data->promotion; // 11
+        $product[] = $lims_product_data->is_batch; // 12
+        $product[] = $lims_product_data->is_imei; // 13
+        $product[] = $lims_product_data->is_variant; // 14
+        $product[] = 1; // 15: qty
+        return $product;
+    }
+
     public function store(Request $request)
     {
         $data = $request->all();
@@ -2153,7 +2205,9 @@ class SaleController extends Controller
             $currency_list = Currency::where('is_active', true)->get();
             $numberOfInvoice = Sale::count();
             $custom_fields = CustomField::where('belongs_to', 'sale')->get();
-            return view('backend.sale.pos', compact('currency_list','role','all_permission', 'lims_customer_list', 'lims_customer_group_all', 'lims_warehouse_list', 'lims_reward_point_setting_data', 'lims_product_list', 'product_number', 'lims_tax_list', 'lims_biller_list', 'lims_pos_setting_data', 'options', 'lims_brand_list', 'lims_category_list', 'lims_table_list', 'recent_sale', 'recent_draft', 'lims_coupon_list', 'flag', 'numberOfInvoice', 'custom_fields', 'customer_active', 'keybord_active'));
+            $lims_account_list = Account::where('is_active', true)->get();
+            $lims_open_items_list = Product::where('type', 'service')->where('is_active', true)->get(['id', 'name']);
+            return view('backend.sale.pos', compact('currency_list','role','all_permission', 'lims_customer_list', 'lims_customer_group_all', 'lims_warehouse_list', 'lims_reward_point_setting_data', 'lims_product_list', 'product_number', 'lims_tax_list', 'lims_biller_list', 'lims_pos_setting_data', 'options', 'lims_brand_list', 'lims_category_list', 'lims_table_list', 'recent_sale', 'recent_draft', 'lims_coupon_list', 'flag', 'numberOfInvoice', 'custom_fields', 'customer_active', 'keybord_active', 'lims_open_items_list', 'lims_account_list'));
         }
         else
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
@@ -3812,7 +3866,13 @@ class SaleController extends Controller
                                 ])->whereDate('created_at', date("Y-m-d"))->sum('amount');
         $data['total_sale_return'] = Returns::whereDate('created_at', date("Y-m-d"))->sum('grand_total');
         $data['total_expense'] = Expense::whereDate('created_at', date("Y-m-d"))->sum('amount');
-        $data['total_cash'] = $data['total_payment'] - ($data['total_sale_return'] + $data['total_expense']);
+
+        $default_account = Account::where('is_default', true)->first();
+        $data['total_cash_drop'] = MoneyTransfer::whereDate('created_at', date("Y-m-d"))
+                                        ->where('from_account_id', $default_account->id)
+                                        ->sum('amount');
+
+        $data['total_cash'] = $data['total_payment'] - ($data['total_sale_return'] + $data['total_expense'] + $data['total_cash_drop']);
         return $data;
     }
 
