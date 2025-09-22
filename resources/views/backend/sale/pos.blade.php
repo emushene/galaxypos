@@ -4004,19 +4004,51 @@ $('#product-table').DataTable({
                     description: description.trim(),
                     price: parseFloat(price)
                 },
-                success: function(data) {
-                    addNewProduct(data, true);
+            success: function(data) {
+                if (data) {
+                    var newRow = $("<tr>");
+                    var cols = '';
+                    pos = product_pos.indexOf(data[9]);
+                    if(pos < 0) {
+                        temp_unit_name = (data[6]).split(',');
+                        cols += '<td class="col-sm-5 product-title"><strong>' + data[0] + '</strong><button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button></td>';
+                        cols += '<td class="col-sm-2 product-price"></td>';
+                        cols += '<td class="col-sm-2"><div class="input-group"><span class="input-group-btn"><button type="button" class="btn btn-default minus"><span class="dripicons-minus"></span></button></span><input type="text" name="qty[]" class="form-control qty numkey input-number" value="1" step="any" required><span class="input-group-btn"><button type="button" class="btn btn-default plus"><span class="dripicons-plus"></span></button></span></div></td>';
+                        cols += '<td class="col-sm-2 sub-total"></td>';
+                        cols += '<td class="col-sm-1"><button type="button" class="ibtnDel btn btn-md btn-danger">{{trans("file.delete")}}</button></td>';
+                        cols += '<input type="hidden" class="product-code" name="product_code[]" value="' + data[1] + '"/>';
+                        cols += '<input type="hidden" class="product-id" name="product_id[]" value="' + data[9] + '"/>';
+                        cols += '<input type="hidden" class="product_variant_id" name="product_variant_id[]" value="'+data[10]+'"/>';
+                        cols += '<input type="hidden" class="sale-unit" name="sale_unit[]" value="' + temp_unit_name[0] + '"/>';
+                        cols += '<input type="hidden" class="net_unit_price" name="net_unit_price[]" value="' + data[2] + '" />';
+                        cols += '<input type="hidden" class="discount-value" name="discount[]" value="0.00" />';
+                        cols += '<input type="hidden" class="tax-rate" name="tax_rate[]" value="' + data[3] + '"/>';
+                        cols += '<input type="hidden" class="tax-value" name="tax[]" />';
+                        cols += '<input type="hidden" class="subtotal-value" name="subtotal[]" />';
+                        cols += '<input type="hidden" class="imei-number" name="imei_number[]" />';
+
+                        newRow.append(cols);
+                        $("table.order-list tbody").prepend(newRow);
+                        rowindex = newRow.index();
+                        
+                        product_price.splice(rowindex, 0, parseFloat(data[2]));
+                        product_discount.splice(rowindex, 0, '0.00');
+                        tax_rate.splice(rowindex, 0, parseFloat(data[3]));
+                        tax_name.splice(rowindex, 0, data[4]);
+                        tax_method.splice(rowindex, 0, data[5]);
+                        unit_name.splice(rowindex, 0, [temp_unit_name[0]]);
+                        unit_operator.splice(rowindex, 0, ['*']);
+                        unit_operation_value.splice(rowindex, 0, [1]);
+                        product_pos.push(data[9]);
+                        checkQuantity(1, true);
+                    }
                     $('#openItemModal').modal('hide');
                     $('#openItemForm')[0].reset();
-                    $('#open_item_id').val('').selectpicker('refresh');
-                    $('#addOpenItemBtn').prop('disabled', false);
-                },
-                error: function(xhr, status, error) {
-                    // Handle errors (e.g., display an error message)
-                    console.error(error);
-                    alert('Error adding open item. ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Please try again.'));
-                    $('#addOpenItemBtn').prop('disabled', false);
                 }
+            },
+            error: function(xhr, status, error) {
+                alert('Error adding open item. ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Please try again.'));
+            }
             });
         });
     });

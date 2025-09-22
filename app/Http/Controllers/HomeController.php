@@ -447,20 +447,29 @@ class HomeController extends Controller
                 $units = Unit::select('id', 'operator', 'operation_value')->get();
                 if($product_sale->sale_unit_id) {
                     $sale_unit_data = $units->where('id', $product_sale->sale_unit_id)->first();
-                    if($sale_unit_data->operator == '*')
-                        $sold_qty = $product_sale->sold_qty * $sale_unit_data->operation_value;
+                    if($sale_unit_data) {
+                        if($sale_unit_data->operator == '*')
+                            $sold_qty = $product_sale->sold_qty * $sale_unit_data->operation_value;
+                        else
+                            $sold_qty = $product_sale->sold_qty / $sale_unit_data->operation_value;
+                    }
                     else
-                        $sold_qty = $product_sale->sold_qty / $sale_unit_data->operation_value;
+                        $sold_qty = $product_sale->sold_qty;
                 }
                 else {
                     $sold_qty = $product_sale->sold_qty;
                 }
                 foreach ($product_purchase_data as $key => $product_purchase) {
                     $purchase_unit_data = $units->where('id', $product_purchase->purchase_unit_id)->first();
-                    if($purchase_unit_data->operator == '*')
-                        $total_received_qty += $product_purchase->recieved * $purchase_unit_data->operation_value;
-                    else
-                        $total_received_qty += $product_purchase->recieved / $purchase_unit_data->operation_value;
+                    if($purchase_unit_data) {
+                        if($purchase_unit_data->operator == '*')
+                            $total_received_qty += $product_purchase->received * $purchase_unit_data->operation_value;
+                        else
+                            $total_received_qty += $product_purchase->received / $purchase_unit_data->operation_value;
+                    }
+                    else {
+                        $total_received_qty += $product_purchase->received;
+                    }
                     $total_purchased_amount += $product_purchase->total;
                 }
                 if($total_received_qty)

@@ -675,46 +675,50 @@ class SaleController extends Controller
 
                     if($sale_unit[$i] != 'n/a') {
                         $lims_sale_unit_data  = Unit::where('unit_name', $sale_unit[$i])->first();
-                        $sale_unit_id = $lims_sale_unit_data->id;
-                        if($lims_product_data->is_variant) {
-                            $lims_product_variant_data = ProductVariant::select('id', 'variant_id', 'qty')->FindExactProductWithCode($id, $product_code[$i])->first();
-                            $product_sale['variant_id'] = $lims_product_variant_data->variant_id;
-                        }
-                        if($lims_product_data->is_batch && $product_batch_id[$i]) {
-                            $product_sale['product_batch_id'] = $product_batch_id[$i];
-                        }
-
-                        if($data['sale_status'] == 1) {
-                            if($lims_sale_unit_data->operator == '*')
-                                $quantity = $qty[$i] * $lims_sale_unit_data->operation_value;
-                            elseif($lims_sale_unit_data->operator == '/')
-                                $quantity = $qty[$i] / $lims_sale_unit_data->operation_value;
-                            //deduct quantity
-                            $lims_product_data->qty = $lims_product_data->qty - $quantity;
-                            $lims_product_data->save();
-                            //deduct product variant quantity if exist
+                        if($lims_sale_unit_data) {
+                            $sale_unit_id = $lims_sale_unit_data->id;
                             if($lims_product_data->is_variant) {
-                                $lims_product_variant_data->qty -= $quantity;
-                                $lims_product_variant_data->save();
-                                $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($id, $lims_product_variant_data->variant_id, $data['warehouse_id'])->first();
+                                $lims_product_variant_data = ProductVariant::select('id', 'variant_id', 'qty')->FindExactProductWithCode($id, $product_code[$i])->first();
+                                $product_sale['variant_id'] = $lims_product_variant_data->variant_id;
                             }
-                            /*elseif($product_batch_id[$i]) {
-                                $lims_product_warehouse_data = Product_Warehouse::where([
-                                    ['product_batch_id', $product_batch_id[$i] ],
-                                    ['warehouse_id', $data['warehouse_id'] ]
-                                ])->first();
-                                $lims_product_batch_data = ProductBatch::find($product_batch_id[$i]);
-                                //deduct product batch quantity
-                                $lims_product_batch_data->qty -= $quantity;
-                                $lims_product_batch_data->save();
-                            }*/
-                            else {
-                                $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($id, $data['warehouse_id'])->first();
+                            if($lims_product_data->is_batch && $product_batch_id[$i]) {
+                                $product_sale['product_batch_id'] = $product_batch_id[$i];
                             }
-                            //deduct quantity from warehouse
-                            $lims_product_warehouse_data->qty -= $quantity;
-                            $lims_product_warehouse_data->save();
+
+                            if($data['sale_status'] == 1) {
+                                if($lims_sale_unit_data->operator == '*')
+                                    $quantity = $qty[$i] * $lims_sale_unit_data->operation_value;
+                                elseif($lims_sale_unit_data->operator == '/')
+                                    $quantity = $qty[$i] / $lims_sale_unit_data->operation_value;
+                                //deduct quantity
+                                $lims_product_data->qty = $lims_product_data->qty - $quantity;
+                                $lims_product_data->save();
+                                //deduct product variant quantity if exist
+                                if($lims_product_data->is_variant) {
+                                    $lims_product_variant_data->qty -= $quantity;
+                                    $lims_product_variant_data->save();
+                                    $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($id, $lims_product_variant_data->variant_id, $data['warehouse_id'])->first();
+                                }
+                                /*elseif($product_batch_id[$i]) {
+                                    $lims_product_warehouse_data = Product_Warehouse::where([
+                                        ['product_batch_id', $product_batch_id[$i] ],
+                                        ['warehouse_id', $data['warehouse_id'] ]
+                                    ])->first();
+                                    $lims_product_batch_data = ProductBatch::find($product_batch_id[$i]);
+                                    //deduct product batch quantity
+                                    $lims_product_batch_data->qty -= $quantity;
+                                    $lims_product_batch_data->save();
+                                }*/
+                                else {
+                                    $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($id, $data['warehouse_id'])->first();
+                                }
+                                //deduct quantity from warehouse
+                                $lims_product_warehouse_data->qty -= $quantity;
+                                $lims_product_warehouse_data->save();
+                            }
                         }
+                        else
+                            $sale_unit_id = 0;
                     }
                     else
                         $sale_unit_id = 0;
@@ -4018,7 +4022,7 @@ class SaleController extends Controller
                             ['warehouse_id', $lims_sale_data->warehouse_id]
                         ])->first();
 
-                        $lims_product_batch_data->qty -= $product_sale->qty;
+                        $lims_product_batch_data->qty += $product_sale->qty;
                         $lims_product_batch_data->save();
                     }
                     else {
@@ -4147,7 +4151,7 @@ class SaleController extends Controller
                         ['warehouse_id', $lims_sale_data->warehouse_id]
                     ])->first();
 
-                    $lims_product_batch_data->qty -= $product_sale->qty;
+                    $lims_product_batch_data->qty += $product_sale->qty;
                     $lims_product_batch_data->save();
                 }
                 else {

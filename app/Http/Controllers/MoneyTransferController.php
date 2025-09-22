@@ -55,23 +55,16 @@ class MoneyTransferController extends Controller
             }
         }
 
-        $lims_from_account_data = Account::find($data['from_account_id']);
-        $lims_from_account_data->total_balance -= $data['amount'];
-        $lims_from_account_data->save();
         DB::beginTransaction();
         try {
             $lims_from_account_data = Account::find($data['from_account_id']);
             $lims_from_account_data->total_balance -= $data['amount'];
             $lims_from_account_data->save();
 
-        $lims_to_account_data = Account::find($data['to_account_id']);
-        $lims_to_account_data->total_balance += $data['amount'];
-        $lims_to_account_data->save();
             $lims_to_account_data = Account::find($data['to_account_id']);
             $lims_to_account_data->total_balance += $data['amount'];
             $lims_to_account_data->save();
 
-        try {
             MoneyTransfer::create($data);
             DB::commit();
         } catch (\Exception $e) {
