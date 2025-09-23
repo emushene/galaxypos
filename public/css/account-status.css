@@ -1,0 +1,53 @@
+/* public/css/account-status.css */
+
+.status-card {
+    max-width: 500px;
+    width: 100%;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.status-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+}
+
+.status-icon.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.status-icon.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.status-icon.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.status-title {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.status-message {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+.btn-lg-rounded {
+    border-radius: 50rem;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}

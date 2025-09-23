@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\AccountsController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddonInstallController;
 use App\Http\Controllers\AdjustmentController;
 use App\Http\Controllers\AttendanceController;
@@ -130,13 +131,13 @@ Route::get('/documentation', [HomeController::class, 'documentation']);
 // =============================
 // SaaS account state routes
 // =============================
-Route::view('/account/pending', 'account.pending')->name('account.pending');
-Route::view('/account/trial_expired', 'account.trial_expired')->name('account.trial_expired');
-Route::view('/account/suspended', 'account.suspended')->name('account.suspended');
-Route::view('/account/inactive', 'account.inactive')->name('account.inactive');
+Route::get('/account/pending', [AccountController::class, 'pending'])->name('account.pending');
+Route::get('/account/trial-expired', [AccountController::class, 'trialExpired'])->name('account.trial_expired');
+Route::get('/account/suspended', [AccountController::class, 'suspended'])->name('account.suspended');
+Route::get('/account/inactive', [AccountController::class, 'inactive'])->name('account.inactive');
 
 
-Route::group(['middleware' => ['common', 'auth', 'active', ]], function() {
+Route::group(['middleware' => ['common', 'auth', 'active', 'check.subscription']], function() {
 
     Route::resource('license', LicenseController::class)->except([ 'show']);
     Route::controller(LicenseController::class)->group(function () {

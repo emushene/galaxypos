@@ -31,14 +31,11 @@
             @php $url = url()->previous(); @endphp
         @endif
         <div class="hidden-print">
-            <table>
-                <tr>
-                    <td><a href="{{$url}}" class="btn btn-info"><i class="fa fa-arrow-left"></i> {{trans('file.Back')}}</a> </td>
-                    <td><button onclick="window.print();" class="btn btn-primary"><i class="dripicons-print"></i> {{trans('file.Print')}}</button></td>
-                </tr>
-            </table>
-            <br>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+            <a href="{{url('pos')}}" class="btn btn-info" style="width: 150px;"><i class="fa fa-arrow-left"></i> {{trans('file.Go Back to POS')}}</a>
+            <button onclick="window.print();" class="btn btn-primary" style="width: 150px;"><i class="dripicons-print"></i> {{trans('file.Print')}}</button>
         </div>
+    </div>
         <table style="width: 100%;border-collapse: collapse;">
             <tr>
                 <td colspan="2" style="padding:9px 0;width:40%">

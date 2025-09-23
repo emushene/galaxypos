@@ -83,14 +83,10 @@
         @php $url = url()->previous(); @endphp
     @endif
     <div class="hidden-print">
-        <table>
-            <tr>
-                <td><a href="{{$url}}" class="btn btn-info"><i class="fa fa-arrow-left"></i> {{trans('file.Back')}}</a> </td>
-                <td><button onclick="window.print();" class="btn btn-primary"><i class="dripicons-print"></i> {{trans('file.Print')}}</button></td>
-
-            </tr>
-        </table>
-        <br>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+            <a href="{{url('pos')}}" class="btn btn-info" style="width: 150px;"><i class="fa fa-arrow-left"></i> {{trans('file.Go Back to POS')}}</a>
+            <button onclick="window.print();" class="btn btn-primary" style="width: 150px;"><i class="dripicons-print"></i> {{trans('file.Print')}}</button>
+        </div>
     </div>
 
     <div id="receipt-data">
@@ -336,15 +332,6 @@
             localStorage.removeItem(keys[i]);
         }
     }
-
-    function auto_print() {
-        window.print();
-    }
-    function goBack() {
-        window.location.href = "{{$url}}";
-    }
-    setTimeout(auto_print, 1000); // Print after 1 second
-    setTimeout(goBack, 2000); // Go back to POS after 2 seconds (adjust as needed)
 </script>
 </body>
 </html>

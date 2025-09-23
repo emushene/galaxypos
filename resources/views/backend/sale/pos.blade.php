@@ -1,5 +1,14 @@
 @extends('backend.layout.top-head')
 @section('content')
+<style>
+    .table.order-list tbody td {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    .table.order-list thead th {
+        padding: 0.5rem;
+    }
+</style>
 @if($errors->has('phone_number'))
 <div class="alert alert-danger alert-dismissible text-center">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ $errors->first('phone_number') }}</div>
@@ -3291,7 +3300,7 @@ function addNewProduct(data, is_open_item = false){
     var cols = '';
     temp_unit_name = (data[6]).split(',');
     pos = product_code.indexOf(data[1]);
-    cols += '<td class="col-sm-5 product-title"><button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"><span style="margin-left: -19px; white-space: break-spaces;"><strong>' + data[0] + '</strong></span></button><br>' + data[1] + '<p>In Stock: <span class="in-stock"></span></p></td>';
+    cols += '<td class="col-sm-5 product-title"><button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"><span style="margin-left: -19px; white-space: break-spaces;">' + data[0] + '</span></button></td>';
     
    // cols += '<td class="col-sm-2"><input type="text" class="form-control barcode-no" value="'+data[16]+'" disabled/> <input type="hidden" class="product-barcode" name="product_barcode[]" value="'+data[16]+'"/> </td>';
   

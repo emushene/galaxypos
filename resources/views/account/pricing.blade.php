@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.account_status')
 
 @section('content')
-<div class="container py-5">
+<div class="w-100">
     <h1 class="text-center fw-bold mb-5">Choose Your POS Plan</h1>
 
     <div class="row justify-content-center">

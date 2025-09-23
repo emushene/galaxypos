@@ -137,6 +137,7 @@
                                     <select class="form-control" name="paper_size" required id="paper-size">
                                         <option value="a4">A4</option>
                                         <option value="letter">US Letter</option>
+                                        <option value="roll">Roll Paper</option>
                                     </select>
                                 </div>
                             </div>
@@ -162,6 +163,9 @@
                                     <input type="checkbox" name="promo_price" id="show-promo-price"/> <label for="show-promo-price">{{trans('file.Promotional Price')}}</label>
                                 </div>
                             </div>
+                        </div>
+                        <div id="roll-paper-info" class="alert alert-info" style="display: none;">
+                            <strong>Note:</strong> For roll paper printing, ensure your printer settings are configured for your specific paper roll width.
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-12">
@@ -265,10 +269,11 @@
             });
         });
 
+        var paperSize = $('#paper-size').val();
         var settings = {
             width: parseFloat($('#label-width').val()) || 60,
             height: parseFloat($('#label-height').val()) || 40,
-            paperSize: $('#paper-size').val(),
+            paperSize: paperSize,
             fontSize: parseFloat($('#font-size').val()) || 10,
             barcodeHeight: parseFloat($('#barcode-height').val()) || 30,
             barcodeWidth: parseFloat($('#barcode-width').val()) || 80,
@@ -278,7 +283,22 @@
         };
 
         var htmlContent = generateBarcodeHtml(products, settings);
-        $('#preview-section').html(htmlContent);
+        var $preview = $('#preview-section');
+        $preview.html(htmlContent);
+
+        if (paperSize === 'roll') {
+            $preview.css({
+                'flex-direction': 'column',
+                'align-items': 'center'
+            });
+            $('#roll-paper-info').show();
+        } else {
+            $preview.css({
+                'flex-direction': 'row',
+                'align-items': 'flex-start'
+            });
+            $('#roll-paper-info').hide();
+        }
     }
 
     $(document).ready(function() {
@@ -343,16 +363,36 @@
 
         $("#print-button-main").on("click", function() {
             const settings = {
-                width: parseFloat($('#label-width').val()) || 60,
-                height: parseFloat($('#label-height').val()) || 40,
                 paperSize: $('#paper-size').val(),
             };
 
-            const paperDimensions = {
-                a4: { width: '210mm', height: '297mm' },
-                letter: { width: '8.5in', height: '11in' }
-            };
-            const selectedPaper = paperDimensions[settings.paperSize];
+            let pageStyle = '';
+            if (settings.paperSize === 'roll') {
+                pageStyle = `@page { margin: 2mm; }`;
+            } else {
+                pageStyle = `@page { size: ${settings.paperSize}; margin: 10mm; }`;
+            }
+
+            let containerStyle = '';
+            if (settings.paperSize === 'roll') {
+                containerStyle = `
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0;
+                `;
+            } else {
+                containerStyle = `
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0;
+                    justify-content: flex-start;
+                    align-content: flex-start;
+                    width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+                `;
+            }
 
             let printContents = document.getElementById('preview-section').innerHTML;
             
@@ -363,26 +403,16 @@
                 <head>
                     <title>Print Barcodes</title>
                     <style>
-                        @page {
-                            size: ${settings.paperSize};
-                            margin: 10mm;
-                        }
+                        ${pageStyle}
                         body {
                             margin: 0;
                             font-family: sans-serif;
                         }
                         .barcode-container {
-                            display: flex;
-                            flex-wrap: wrap;
-                            gap: 0;
-                            justify-content: flex-start;
-                            align-content: flex-start;
-                            width: 100%;
-                            height: 100%;
-                            overflow: hidden;
+                           ${containerStyle}
                         }
                         .barcode-item {
-                            border: none; /* No border for actual printing */
+                            border: none;
                             text-align: center;
                             box-sizing: border-box;
                             overflow: hidden;
