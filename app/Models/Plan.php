@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Plan extends Model
 {
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
+    protected $connection = 'main';
+
     protected $fillable = [
         'name',
         'price',

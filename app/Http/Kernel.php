@@ -29,6 +29,7 @@ class Kernel extends HttpKernel
     protected $middlewareGroups = [
         'web' => [
             \App\Http\Middleware\EncryptCookies::class,
+            \App\Http\Middleware\IdentifyTenantBySubdomain::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
@@ -65,6 +66,7 @@ class Kernel extends HttpKernel
         'common' => \App\Http\Middleware\Common::class,
         'prevent.cashier.dashboard' => \App\Http\Middleware\PreventCashierFromDashboard::class,
         'check.subscription' => \App\Http\Middleware\CheckSubscription::class,
+        'tenant.identify' => \App\Http\Middleware\IdentifyTenantBySubdomain::class,
     ];
 
     /**

@@ -10,6 +10,13 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
+    protected $connection = 'main';
+
     /*
     |--------------------------------------------------------------------------
     | Mass Assignment
@@ -28,6 +35,7 @@ class User extends Authenticatable
         'is_deleted',
         'status',   // SaaS state (pending, active, suspended, trial_expired, etc.)
         'plan_id',  // quick reference to currently assigned plan
+        'tenant_id',
     ];
 
     protected $hidden = [
@@ -59,6 +67,12 @@ class User extends Authenticatable
     | Relationships
     |--------------------------------------------------------------------------
     */
+    // Tenant
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
     // Role
     public function role()
     {
