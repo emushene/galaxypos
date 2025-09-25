@@ -20,7 +20,7 @@ class CheckSubscription
         // Placeholder for subscription check logic.
         // In a real application, you would check the user's subscription status in the database.
         // For demonstration purposes, we'll simulate an inactive subscription.
-        $subscription_is_active = false; // Change to true to simulate an active subscription
+        $subscription_is_active = true; // Change to true to simulate an active subscription
 
         if (Auth::check() && !$subscription_is_active) {
             // If the user is authenticated but the subscription is not active,
